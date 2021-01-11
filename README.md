@@ -1,6 +1,6 @@
 ![MDB Logo](https://mdbootstrap.com/img/Marketing/general/logo/medium/mdb-react.png)
 
-# MDB React 5
+# MDB 5 React
 
 ### React 17 & Bootstrap 5 & Material Design 2.0 UI KIT
 
@@ -80,13 +80,13 @@ Trusted by <b>2 000 000+</b> developers & designers. Used by companies like
      <tr>
         <td align="center">
           <p align="center"><b>Start to Code</b></p>
-          <a href="https://mdbootstrap.com/docs/b5/react/bootstrap-5-tutorial/#section-beginner" alt="Bootstrap 5" rel="dofollow">
+          <a href="https://mdbootstrap.com/docs/standard/bootstrap-5-tutorial/#section-beginner" alt="Bootstrap 5" rel="dofollow">
           		<img src="https://mdbootstrap.com/wp-content/uploads/2020/12/Screenshot_26.png">
           </a>
          </td>
         <td align="center">
           <p align="center"><b>Learn Bootstrap 5 | Crash Course for Beginners in 1.5H</b></p>
-          <a href="https://mdbootstrap.com/docs/b5/react/bootstrap-5-tutorial/#section-beginner" alt="Bootstrap 5" rel="dofollow">
+          <a href="https://mdbootstrap.com/docs/standard/bootstrap-5-tutorial/#section-beginner" alt="Bootstrap 5" rel="dofollow">
           		<img src="https://mdbootstrap.com/wp-content/uploads/2020/12/Screenshot_26.png">
           </a>
          </td>
@@ -98,7 +98,7 @@ Trusted by <b>2 000 000+</b> developers & designers. Used by companies like
 
 # Demo
 
-#### Simplicity and ease of use are key features of MDB 5 UI Kit. You need only one minute to install and run it.
+#### Simplicity and ease of use are key features of MDB 5 React UI Kit. You need only one minute to install and run it.
 
 ### Buttons
 
