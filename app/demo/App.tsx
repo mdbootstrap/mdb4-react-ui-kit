@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  MDBBadge,
-  MDBBtn,
-  MDBCol,
-  MDBRow,
-  MDBContainer,
-  MDBCard,
-  MDBCardBody,
-} from 'mdb-react-ui-kit';
+import { MDBBtn, MDBContainer } from 'mdb-react-ui-kit';
 
 function App() {
   return (
@@ -26,14 +18,14 @@ function App() {
             Thank you for using our product. We're glad you're with us.
           </h5>
           <p className='mb-3'>MDB Team</p>
-          <a
-            className='btn btn-primary btn-lg'
+          <MDBBtn
+            tag='a'
             href='https://mdbootstrap.com/docs/standard/getting-started/'
             target='_blank'
             role='button'
           >
             Start MDB tutorial
-          </a>
+          </MDBBtn>
         </div>
       </div>
     </MDBContainer>
