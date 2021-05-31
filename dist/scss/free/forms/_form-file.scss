@@ -10,3 +10,10 @@
     }
   }
 }
+
+.form-control-sm {
+  &::-webkit-file-upload-button {
+    padding: 0.28rem 0.5rem;
+    margin: -0.28rem -0.5rem;
+  }
+}

@@ -3,6 +3,6 @@
 //
 
 .visually-hidden,
-.visually-hidden-focusable:not(:focus):not(:focus-within) {
+.visually-hidden-focusable:not(:focus) {
   @include visually-hidden();
 }

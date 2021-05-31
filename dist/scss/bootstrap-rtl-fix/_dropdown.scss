@@ -16,11 +16,13 @@
 // The dropdown menu
 .dropdown-menu {
   position: absolute;
+  top: 100%;
+  left: 0;
   z-index: $zindex-dropdown;
   display: none; // none by default, but block on "open" of the menu
   min-width: $dropdown-min-width;
   padding: $dropdown-padding-y $dropdown-padding-x;
-  margin: 0; // Override default margin of ul
+  margin: $dropdown-spacer 0 0; // override default ul
   @include font-size($dropdown-font-size);
   color: $dropdown-color;
   text-align: left; // Ensures proper alignment if parent has it changed (e.g., modal footer)
@@ -31,10 +33,9 @@
   @include border-radius($dropdown-border-radius);
   @include box-shadow($dropdown-box-shadow);
 
-  &[data-mdb-popper] {
-    top: 100%;
-    left: 0;
-    margin-top: $dropdown-spacer;
+  // Reset positioning when positioned with Popper
+  &[style] {
+    right: auto !important; // stylelint-disable-line declaration-no-important
   }
 }
 
@@ -48,24 +49,18 @@
 
     .dropdown-menu#{$infix}-start {
       --bs-position: start;
-
-      &[data-mdb-popper] {
-        /*!rtl:ignore*/
-        right: auto;
-        /*!rtl:ignore*/
-        left: 0;
-      }
+      /*!rtl:ignore*/
+      right: auto;
+      /*!rtl:ignore*/
+      left: 0;
     }
 
     .dropdown-menu#{$infix}-end {
       --bs-position: end;
-
-      &[data-mdb-popper] {
-        /*!rtl:ignore*/
-        right: 0;
-        /*!rtl:ignore*/
-        left: auto;
-      }
+      /*!rtl:ignore*/
+      right: 0;
+      /*!rtl:ignore*/
+      left: auto;
     }
   }
 }
@@ -74,7 +69,7 @@
 // Allow for dropdowns to go bottom up (aka, dropup-menu)
 // Just add .dropup after the standard .dropdown class and you're set.
 .dropup {
-  .dropdown-menu[data-mdb-popper] {
+  .dropdown-menu {
     top: auto;
     bottom: 100%;
     margin-top: 0;
@@ -87,7 +82,7 @@
 }
 
 .dropend {
-  .dropdown-menu[data-mdb-popper] {
+  .dropdown-menu {
     top: 0;
     right: auto;
     left: 100%;
@@ -104,7 +99,7 @@
 }
 
 .dropstart {
-  .dropdown-menu[data-mdb-popper] {
+  .dropdown-menu {
     top: 0;
     right: 100%;
     left: auto;
