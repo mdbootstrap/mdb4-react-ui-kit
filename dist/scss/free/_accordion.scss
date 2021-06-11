@@ -1,5 +1,15 @@
-.accordion-button::after {
-  font-weight: $font-weight-bold;
-  font-family: 'Font Awesome 5 Pro', 'Font Awesome 5 Free';
-  content: '\f078';
+// Accordion
+
+.accordion-button {
+  &:not(.collapsed) {
+    &:focus {
+      box-shadow: $accordion-button-focus-box-shadow;
+    }
+  }
+
+  &:focus {
+    border-color: $accordion-button-focus-border-color;
+    outline: 0;
+    box-shadow: none;
+  }
 }
