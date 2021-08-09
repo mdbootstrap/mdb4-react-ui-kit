@@ -493,7 +493,6 @@ declare const MDBInput: React$1.FunctionComponent<{
   readonly?: boolean;
   contrast?: boolean;
   value?: string;
-  defaultValue?: string;
   name?: string;
   validation?: string;
   invalid?: boolean;
@@ -520,7 +519,6 @@ declare const MDBCheckbox: React$1.FunctionComponent<{
   invalid?: boolean;
   btn?: boolean;
   btnColor?: string;
-  disableWrapper?: boolean;
   [rest: string]: any;
 }>;
 
