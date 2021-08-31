@@ -204,7 +204,6 @@ class Modal extends React.Component {
           [`modal-${this.props.size}`]: this.props.size
         }), this.props.cssModule)}
         role="document"
-        ref={(c) => (this._dialog = c)}
         {...attributes}
       >
         <div
@@ -228,7 +227,6 @@ class Modal extends React.Component {
 
     // check if modal should receive focus
     if (this._focus) {
-      this._dialog.parentNode.focus();
       this._focus = false;
     }
   }
@@ -258,7 +256,7 @@ class Modal extends React.Component {
 
     if (this.hasTransition()) {
       return (
-        <TransitionGroup component={null} className={mapToCssModules(wrapClassName)}>
+        <TransitionGroup className={mapToCssModules(wrapClassName)}>
           {isOpen && (
             <Fade
               key="modal-dialog"
