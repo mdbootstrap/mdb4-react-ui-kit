@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import Ripple from './Ripple';
-
+import Waves from './Waves';
 
 
 class Button extends React.Component {
@@ -10,7 +9,7 @@ class Button extends React.Component {
     super(props);
     this.state = {
       cursorPos: {}
-    }
+    };
     this.onClick = this.onClick.bind(this);
   }
 
@@ -20,8 +19,8 @@ class Button extends React.Component {
       top: e.clientY,
       left: e.clientX,
       time: Date.now()
-    }
-    this.setState({ cursorPos: cursorPos })
+    };
+    this.setState({ cursorPos: cursorPos });
   }
 
   onClick(e) {
@@ -52,7 +51,7 @@ class Button extends React.Component {
       role,
       type,
       tag: Tag,
-      getRef,
+      innerRef,
       ...attributes
     } = this.props;
 
@@ -77,13 +76,14 @@ class Button extends React.Component {
         type={(Tag === 'button' && !type) ? 'button' : type}
         role={(Tag === 'a' && !role) ? 'button' : role}
         className={classes}
-        ref={getRef}
+        ref={innerRef}
         onClick={this.onClick}
-        onMouseUp={ this.handleClick.bind(this) }
+        onMouseDown={ this.handleClick.bind(this) }
+        onTouchStart={ this.handleClick.bind(this) }
         {...attributes}
       >
         {this.props.children}
-        {this.props.disabled ? false : <Ripple cursorPos={ this.state.cursorPos } outline={outline} flat={flat} />}
+        {this.props.disabled ? false : <Waves cursorPos={ this.state.cursorPos } outline={outline} flat={flat} />}
       </Tag>
     );
   }
@@ -91,7 +91,7 @@ class Button extends React.Component {
 
 Button.defaultProps = {
   color: 'default',
-  tag: 'button',
+  tag: 'button'
 };
 
 Button.propTypes = {
@@ -106,11 +106,12 @@ Button.propTypes = {
   rounded: PropTypes.bool,
   floating: PropTypes.bool,
   flat: PropTypes.bool,
-  getRef: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
+  innerRef: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
   onClick: PropTypes.func,
   size: PropTypes.string,
   children: PropTypes.node,
-  className: PropTypes.string,
+  tag: PropTypes.string,
+  className: PropTypes.string
 };
 
 export default Button;

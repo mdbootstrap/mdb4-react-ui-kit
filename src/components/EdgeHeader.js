@@ -2,38 +2,38 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-class ListGroup extends Component {
+class EdgeHeader extends Component {
 
   render() {
  
     const {
-      children,
+      color,
       className,
       tag: Tag,
       ...attributes
     } = this.props;
 
     const classes = classNames(
-      'list-group',
-      className,
+      'edge-header',
+      color,
+      className
     );
 
     return (
-      <Tag {...attributes} className={classes}>
-        {children}
-      </Tag>
+      <Tag {...attributes} className={classes} />
     );
   }
 }
 
-ListGroup.propTypes = {
+EdgeHeader.propTypes = {
+  color: PropTypes.string,
   tag: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
-  className: PropTypes.string,
-  children: PropTypes.node
+  className: PropTypes.string
 };
 
-ListGroup.defaultProps = {
-  tag: 'ul'
+EdgeHeader.defaultProps = {
+  color: 'deep-purple',
+  tag: 'div'
 };
 
-export default ListGroup;
+export default EdgeHeader;

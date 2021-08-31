@@ -2,38 +2,34 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-class ListGroup extends Component {
+class FreeBird extends Component {
 
   render() {
  
     const {
-      children,
       className,
       tag: Tag,
       ...attributes
     } = this.props;
 
     const classes = classNames(
-      'list-group',
-      className,
+      'container free-bird',
+      className
     );
 
     return (
-      <Tag {...attributes} className={classes}>
-        {children}
-      </Tag>
+      <Tag {...attributes} className={classes} />
     );
   }
 }
 
-ListGroup.propTypes = {
+FreeBird.propTypes = {
   tag: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
-  className: PropTypes.string,
-  children: PropTypes.node
+  className: PropTypes.string
 };
 
-ListGroup.defaultProps = {
-  tag: 'ul'
+FreeBird.defaultProps = {
+  tag: 'div'
 };
 
-export default ListGroup;
+export default FreeBird;

@@ -2,34 +2,35 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-class TabPane extends React.Component {
+class Mask extends React.Component {
 
   render() {
     const {
       className,
-      tabId,
+      children,
+      tag: Tag,
       ...attributes
     } = this.props;
 
     const classes = classNames(
-      'tab-pane',
-      { active: tabId === this.context.activeItemId },
+      'mask',
       className
     );
     return (
-      <div {...attributes} className={classes} />
+      <tag {...attributes} className={classes} >{this.props.children}</tag>
 
     );
   }
 }
 
-TabPane.contextTypes = {
-  activeItemId: PropTypes.any
+Mask.defaultProps = {
+  tag: 'div'
 };
 
-TabPane.propTypes = {
-  tabId: PropTypes.any,
+Mask.propTypes = {
+  tag: PropTypes.string,
+  children: PropTypes.node,
   className: PropTypes.string
 };
 
-export default TabPane;
+export default Mask;

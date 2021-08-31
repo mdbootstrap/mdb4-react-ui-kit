@@ -18,14 +18,20 @@ import Col from './components/Col';
 import Collapse from './components/Collapse';
 import Container from './components/Container';
 import Dropdown from './components/Dropdown';
+import DropdownItem from './components/DropdownItem';
+import DropdownMenu from './components/DropdownMenu';
+import DropdownToggle from './components/DropdownToggle';
+import EdgeHeader from './components/EdgeHeader';
 import Fa from './components/Fa';
 import Fade from './components/Fade';
 import FormInline from './components/FormInline';
 import Footer from './components/Footer';
+import FreeBird from './components/FreeBird';
 import Input from './components/Input';
 import Jumbotron from './components/Jumbotron';
 import ListGroup from './components/ListGroup';
 import ListGroupItem from './components/ListGroupItem';
+import Mask from './components/Mask';
 import Media from './components/Media';
 import Modal from './components/Modal';
 import ModalBody from './components/ModalBody';
@@ -45,21 +51,22 @@ import Popover from './components/Popover';
 import PopoverBody from './components/PopoverBody';
 import PopoverHeader from './components/PopoverHeader';
 import Progress from './components/Progress';
-import Ripple from './components/Ripple';
+import Waves from './components/Waves';
 import Row from './components/Row';
 import Table from './components/Table';
 import TabPane from './components/TabPane';
 import TabContent from './components/TabContent';
 import TextField from './components/TextField';
 import Tooltip from './components/Tooltip';
+import View from './components/View';
 
 export {
-	Badge,
-	Breadcrumb,
-	BreadcrumbItem,
-	Button,
-	ButtonGroup,
-	ButtonToolbar,
+  Badge,
+  Breadcrumb,
+  BreadcrumbItem,
+  Button,
+  ButtonGroup,
+  ButtonToolbar,
   Card,
   CardBody,
   CardImage,
@@ -73,22 +80,28 @@ export {
   Col,
   Collapse,
   Container,
-	Dropdown,
-	Fa,
-	Fade,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  EdgeHeader,
+  Fa,
+  Fade,
   FormInline,
   Footer,
+  FreeBird,
   Input,
   Jumbotron,
   ListGroup,
   ListGroupItem,
+  Mask,
   Media,
-	Modal,
-	ModalBody,
-	ModalFooter,
-	ModalHeader,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   Nav,
-	Navbar,
+  Navbar,
   NavbarBrand,
   NavbarNav,
   NavbarToggler,
@@ -101,11 +114,12 @@ export {
   PopoverBody,
   PopoverHeader,
   Progress,
-  Ripple,
+  Waves,
   Row,
   Table,
   TabPane,
   TabContent,
   TextField,
   Tooltip,
-}
+  View
+};
