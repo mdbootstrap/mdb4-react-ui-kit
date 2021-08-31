@@ -11,7 +11,10 @@ var reactTransitionGroup = require('react-transition-group');
 var ReactDOM = _interopDefault(require('react-dom'));
 var reactPopper = require('react-popper');
 var NumericInput = _interopDefault(require('react-numeric-input'));
+var FocusTrap = _interopDefault(require('focus-trap-react'));
 var reactRouterDom = require('react-router-dom');
+var Popper = _interopDefault(require('popper.js'));
+var mdbreact = require('mdbreact');
 
 function _typeof(obj) {
   if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
@@ -82,20 +85,35 @@ function _extends() {
   return _extends.apply(this, arguments);
 }
 
-function _objectSpread(target) {
+function ownKeys(object, enumerableOnly) {
+  var keys = Object.keys(object);
+
+  if (Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
+    if (enumerableOnly) symbols = symbols.filter(function (sym) {
+      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+    });
+    keys.push.apply(keys, symbols);
+  }
+
+  return keys;
+}
+
+function _objectSpread2(target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i] != null ? arguments[i] : {};
-    var ownKeys = Object.keys(source);
 
-    if (typeof Object.getOwnPropertySymbols === 'function') {
-      ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-      }));
+    if (i % 2) {
+      ownKeys(source, true).forEach(function (key) {
+        _defineProperty(target, key, source[key]);
+      });
+    } else if (Object.getOwnPropertyDescriptors) {
+      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+    } else {
+      ownKeys(source).forEach(function (key) {
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+      });
     }
-
-    ownKeys.forEach(function (key) {
-      _defineProperty(target, key, source[key]);
-    });
   }
 
   return target;
@@ -209,6 +227,10 @@ function _iterableToArray(iter) {
 }
 
 function _iterableToArrayLimit(arr, i) {
+  if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+    return;
+  }
+
   var _arr = [];
   var _n = true;
   var _d = false;
@@ -1665,7 +1687,7 @@ function (_Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "goToIndex", function (item) {
-      _this.setState(_objectSpread({}, _this.state, {
+      _this.setState(_objectSpread2({}, _this.state, {
         activeItem: item
       }));
 
@@ -1740,7 +1762,7 @@ function (_Component) {
         var srcArray = Array.prototype.map.call(CarouselItemsArray, function (item) {
           return item.src;
         });
-        this.setState(_objectSpread({}, this.state, {
+        this.setState(_objectSpread2({}, this.state, {
           srcArray: srcArray
         }));
       }
@@ -2266,7 +2288,7 @@ function (_Component) {
       return React__default.createElement("div", _extends({
         "data-test": "collapse"
       }, attributes, {
-        style: _objectSpread({}, attributes.style, style),
+        style: _objectSpread2({}, attributes.style, {}, style),
         className: classes,
         ref: function ref(c) {
           _this2.element = c;
@@ -2452,34 +2474,50 @@ Table.propTypes = {
 var TableBody = function TableBody(props) {
   var children = props.children,
       color = props.color,
+      columns = props.columns,
       rows = props.rows,
       textWhite = props.textWhite,
-      attributes = _objectWithoutProperties(props, ["children", "color", "rows", "textWhite"]);
+      attributes = _objectWithoutProperties(props, ["children", "color", "columns", "rows", "textWhite"]);
 
   var classes = classNames(color, {
-    "text-white": textWhite
+    'text-white': textWhite
   });
+
+  var renderTD = function renderTD(field, key, array, row) {
+    if (field === 'clickEvent') return null;
+
+    if (field !== 'colspan') {
+      if (row.message) {
+        return key === 0 && React__default.createElement("td", {
+          key: key,
+          colSpan: row.colspan
+        }, row.message);
+      } else {
+        return array[key + 1] !== 'colspan' && row[field] && React__default.createElement("td", {
+          key: key
+        }, row[field]);
+      }
+    } else {
+      return React__default.createElement("td", {
+        key: key,
+        colSpan: row['colspan']
+      }, row[array[key - 1]]);
+    }
+  };
+
   return React__default.createElement("tbody", _extends({
     "data-test": "table-body"
   }, attributes, {
     className: classes || undefined
   }), rows && rows.map(function (row, index) {
     return React__default.createElement("tr", {
-      onClick: row.hasOwnProperty("clickEvent") ? row.clickEvent : undefined,
+      onClick: row.hasOwnProperty('clickEvent') ? row.clickEvent : undefined,
       key: index
-    }, Object.keys(row).map(function (key, index, array) {
-      if (key === "clickEvent") return null;
-
-      if (key !== "colspan") {
-        return array[index + 1] !== "colspan" ? React__default.createElement("td", {
-          key: key
-        }, row[key]) : null;
-      } else {
-        return React__default.createElement("td", {
-          key: key,
-          colSpan: row[key]
-        }, row[array[index - 1]]);
-      }
+    }, columns ? columns.map(function (_ref, key, array) {
+      var field = _ref.field;
+      return renderTD(field, key, array, row);
+    }) : Object.keys(row).map(function (field, key, array) {
+      return renderTD(field, key, array, row);
     }));
   }), children);
 };
@@ -2555,7 +2593,8 @@ var DataTableTable = function DataTableTable(props) {
       theadColor = props.theadColor,
       theadTextWhite = props.theadTextWhite,
       noBottomColumns = props.noBottomColumns,
-      attributes = _objectWithoutProperties(props, ["autoWidth", "bordered", "borderless", "btn", "children", "columns", "dark", "fixed", "hover", "handleSort", "responsive", "responsiveSm", "responsiveMd", "responsiveLg", "responsiveXl", "rows", "small", "sortable", "sorted", "striped", "tbodyColor", "tbodyTextWhite", "theadColor", "theadTextWhite", "noBottomColumns"]);
+      noRecordsFoundLabel = props.noRecordsFoundLabel,
+      attributes = _objectWithoutProperties(props, ["autoWidth", "bordered", "borderless", "btn", "children", "columns", "dark", "fixed", "hover", "handleSort", "responsive", "responsiveSm", "responsiveMd", "responsiveLg", "responsiveXl", "rows", "small", "sortable", "sorted", "striped", "tbodyColor", "tbodyTextWhite", "theadColor", "theadTextWhite", "noBottomColumns", "noRecordsFoundLabel"]);
 
   return React__default.createElement("div", {
     "data-test": "datatable-table",
@@ -2586,7 +2625,8 @@ var DataTableTable = function DataTableTable(props) {
   }), React__default.createElement(TableBody, {
     color: tbodyColor,
     textWhite: tbodyTextWhite,
-    rows: rows
+    rows: rows,
+    columns: columns
   }), !noBottomColumns && React__default.createElement(TableFoot, {
     color: theadColor,
     textWhite: theadTextWhite,
@@ -2603,6 +2643,7 @@ DataTableTable.propTypes = {
   fixed: propTypes.bool.isRequired,
   hover: propTypes.bool.isRequired,
   handleSort: propTypes.func.isRequired,
+  noBottomColumns: propTypes.bool,
   responsive: propTypes.bool.isRequired,
   responsiveSm: propTypes.bool.isRequired,
   responsiveMd: propTypes.bool.isRequired,
@@ -2618,8 +2659,7 @@ DataTableTable.propTypes = {
   tbodyTextWhite: propTypes.bool.isRequired,
   columns: propTypes.arrayOf(propTypes.object),
   rows: propTypes.arrayOf(propTypes.object),
-  children: propTypes.node,
-  noBottomColumns: propTypes.bool
+  children: propTypes.node
 };
 
 var DataTableTableScroll = function DataTableTableScroll(props) {
@@ -2741,7 +2781,8 @@ var DataTableTableScroll = function DataTableTableScroll(props) {
   })), React__default.createElement(TableBody, {
     color: tbodyColor,
     textWhite: tbodyTextWhite,
-    rows: rows
+    rows: rows,
+    columns: columns
   }), children))));
 };
 
@@ -2896,7 +2937,16 @@ var DataTableInfo = function DataTableInfo(props) {
       filteredRows = props.filteredRows,
       info = props.info,
       pages = props.pages,
-      label = props.label;
+      label = props.label,
+      noRecordsFoundLabel = props.noRecordsFoundLabel;
+  var SHOWING_LABEL = label[0];
+  var TO_LABEL = label[1];
+  var OF_LABEL = label[2];
+  var ENTRIES_LABEL = label[3];
+  var NO_RECORDS = filteredRows.length > 0 && filteredRows[0].message === noRecordsFoundLabel;
+  var RECORDS = activePage > 0 ? activePage * entries + 1 : activePage + 1;
+  var RECORDS_ON_PAGE = pages.length - 1 > activePage ? pages[activePage].length * (activePage + 1) : filteredRows.length;
+  var ENTRIES = filteredRows.length;
   return React__default.createElement("div", {
     "data-test": "datatable-info",
     className: "col-sm-12 col-md-5"
@@ -2904,13 +2954,14 @@ var DataTableInfo = function DataTableInfo(props) {
     className: "dataTables_info",
     role: "status",
     "aria-live": "polite"
-  }, label[0], ' ', activePage > 0 ? activePage * entries + 1 : activePage + 1, ' ', label[1], ' ', pages.length - 1 > activePage ? pages[activePage].length * (activePage + 1) : filteredRows.length, ' ', label[2], " ", filteredRows.length, " ", label[3]));
+  }, !NO_RECORDS ? "".concat(SHOWING_LABEL, " ").concat(RECORDS, " ").concat(TO_LABEL, " ").concat(RECORDS_ON_PAGE, " ").concat(OF_LABEL, " ").concat(ENTRIES, " ").concat(ENTRIES_LABEL) : "".concat(SHOWING_LABEL, " 0 ").concat(ENTRIES_LABEL)));
 };
 
 DataTableInfo.propTypes = {
   activePage: propTypes.number.isRequired,
   entries: propTypes.number.isRequired,
   filteredRows: propTypes.array.isRequired,
+  noRecordsFoundLabel: propTypes.string.isRequired,
   info: propTypes.bool.isRequired,
   pages: propTypes.array.isRequired,
   label: propTypes.arrayOf(propTypes.string)
@@ -3157,9 +3208,9 @@ function (_Component) {
         return {
           columns: columns,
           rows: rows,
-          filteredRows: rows
+          filteredRows: _this.props.disableRetreatAfterSorting ? _this.filterRows() : rows
         };
-      }, callback && typeof callback === 'function' && function () {
+      }, callback && typeof callback === "function" && function () {
         return callback();
       });
     });
@@ -3218,18 +3269,20 @@ function (_Component) {
         search: e.target.value
       }, function () {
         return _this.filterRows();
-      }, _this.props.onSearch && typeof _this.props.onSearch === 'function' && _this.props.onSearch(e.target.value));
+      }, _this.props.onSearch && typeof _this.props.onSearch === "function" && _this.props.onSearch(e.target.value));
     });
 
     _defineProperty(_assertThisInitialized(_this), "checkFieldValue", function (array, field) {
-      return array[field] && typeof array[field] !== 'string' ? array[field].props.searchValue : array[field];
+      return array[field] && typeof array[field] !== "string" ? array[field].props.searchvalue : array[field];
     });
 
     _defineProperty(_assertThisInitialized(_this), "checkField", function (field, a, b, direction) {
       var _ref = [_this.checkFieldValue(a, field), _this.checkFieldValue(b, field)],
           aField = _ref[0],
           bField = _ref[1];
-      return direction === 'desc' ? aField < bField : aField > bField;
+      var comp = aField > bField ? -1 : 1;
+      if (direction === "asc") comp *= -1;
+      return comp;
     });
 
     _defineProperty(_assertThisInitialized(_this), "sort", function (rows, sortRows, field, direction) {
@@ -3238,25 +3291,25 @@ function (_Component) {
           return _this.checkField(field, a, b, direction);
         }
 
-        return direction === 'asc' ? a[field] < b[field] ? -1 : 1 : a[field] > b[field] ? -1 : 1;
+        return direction === "asc" ? a[field] < b[field] ? -1 : 1 : a[field] > b[field] ? -1 : 1;
       });
     });
 
     _defineProperty(_assertThisInitialized(_this), "handleSort", function (field, sort) {
       var onSort = _this.props.onSort;
-      if (sort === 'disabled') return;
+      if (sort === "disabled") return;
 
       _this.setState(function (prevState) {
         var sortRows = _this.props.sortRows;
         var rows = prevState.rows,
             columns = prevState.columns;
-        var direction = sort === 'desc' ? 'desc' : 'asc';
+        var direction = sort === "desc" ? "desc" : "asc";
 
         _this.sort(rows, sortRows, field, direction);
 
         columns.forEach(function (col) {
-          if (col.sort === 'disabled') return;
-          col.sort = col.field === field ? col.sort === 'desc' ? 'asc' : 'desc' : '';
+          if (col.sort === "disabled") return;
+          col.sort = col.field === field ? col.sort === "desc" ? "asc" : "desc" : "";
         });
         return {
           rows: rows,
@@ -3267,9 +3320,9 @@ function (_Component) {
         return _this.filterRows();
       });
 
-      onSort && typeof onSort === 'function' && onSort({
+      onSort && typeof onSort === "function" && onSort({
         column: field,
-        direction: sort === 'desc' ? 'desc' : 'asc'
+        direction: sort === "desc" ? "desc" : "asc"
       });
     });
 
@@ -3284,11 +3337,22 @@ function (_Component) {
       _this.setState(function (prevState) {
         var filteredRows = prevState.rows.filter(function (row) {
           for (var key in row) {
-            if ((!unsearchable.length || !unsearchable.includes(key)) && typeof row[key] !== 'function') {
-              var stringValue = '';
+            if ((!unsearchable.length || !unsearchable.includes(key)) && typeof row[key] !== "function") {
+              var stringValue = "";
 
-              if (sortRows && typeof row[key] !== 'string') {
-                stringValue = row[key].props.searchValue;
+              if (sortRows && typeof row[key] !== "string") {
+                (function () {
+                  var content = [];
+
+                  var getContent = function getContent(element) {
+                    return _typeof(element) === "object" ? element.props.children && Array.from(element.props.children).map(function (el) {
+                      return getContent(el);
+                    }) : content.push(element);
+                  };
+
+                  getContent(row[key]);
+                  stringValue = content.join("");
+                })();
               } else {
                 if (row[key]) {
                   stringValue = row[key].toString();
@@ -3305,10 +3369,21 @@ function (_Component) {
           message: noRecordsFoundLabel,
           colspan: prevState.columns.length
         });
-        return {
-          filteredRows: filteredRows,
-          activePage: 0
-        };
+        var test = {};
+
+        if (_this.props.disableRetreatAfterSorting) {
+          test = {
+            filteredRows: filteredRows,
+            activePage: prevState.activePage = prevState.activePage < prevState.pages.length || prevState.activePage === 0 ? prevState.activePage : prevState.pages.length - 1
+          };
+        } else if (!_this.props.disableRetreatAfterSorting) {
+          test = {
+            filteredRows: filteredRows,
+            activePage: 0
+          };
+        }
+
+        return test;
       }, function () {
         return _this.paginateRows();
       });
@@ -3322,7 +3397,9 @@ function (_Component) {
             entries = prevState.entries,
             filteredRows = prevState.filteredRows,
             activePage = prevState.activePage;
-        var paging = _this.props.paging;
+        var _this$props2 = _this.props,
+            paging = _this$props2.paging,
+            disableRetreatAfterSorting = _this$props2.disableRetreatAfterSorting;
         pages = [];
 
         if (paging) {
@@ -3331,7 +3408,9 @@ function (_Component) {
             pages.push(filteredRows.slice(pageEndIndex - entries, pageEndIndex));
           }
 
-          activePage = activePage < pages.length || activePage === 0 ? activePage : pages.length - 1;
+          if (!disableRetreatAfterSorting) {
+            activePage = activePage < pages.length || activePage === 0 ? activePage : pages.length - 1;
+          }
         } else {
           pages.push(filteredRows);
           activePage = 0;
@@ -3352,7 +3431,7 @@ function (_Component) {
         activePage: page
       });
 
-      onPageChange && typeof onPageChange === 'function' && onPageChange({
+      onPageChange && typeof onPageChange === "function" && onPageChange({
         activePage: page + 1,
         pagesAmount: _this.pagesAmount()
       });
@@ -3372,7 +3451,7 @@ function (_Component) {
       order: props.order || [],
       pages: [],
       rows: props.data.rows || [],
-      search: '',
+      search: "",
       sorted: false,
       translateScrollHead: 0,
       unsearchable: []
@@ -3395,7 +3474,7 @@ function (_Component) {
           order = _this$state3.order,
           columns = _this$state3.columns;
 
-      if (typeof data === 'string') {
+      if (typeof data === "string") {
         this.fetchData(data, this.paginateRows);
       }
 
@@ -3404,63 +3483,65 @@ function (_Component) {
     }
   }, {
     key: "componentDidUpdate",
-    value: function componentDidUpdate(prevProps, _) {
+    value: function componentDidUpdate(prevProps, prevState) {
       var data = this.props.data;
 
       if (prevProps.data !== data) {
-        typeof data === 'string' ? this.fetchData(data) : this.setData(data.rows, data.columns, this.paginateRows);
+        typeof data === "string" ? this.fetchData(data) : this.setData(data.rows, data.columns, this.paginateRows);
         this.setUnsearchable(this.state.columns);
+        this.filterRows();
       }
     }
   }, {
     key: "render",
     value: function render() {
-      var _this$props2 = this.props,
-          autoWidth = _this$props2.autoWidth,
-          bordered = _this$props2.bordered,
-          borderless = _this$props2.borderless,
-          barReverse = _this$props2.barReverse,
-          btn = _this$props2.btn,
-          className = _this$props2.className,
-          children = _this$props2.children,
-          dark = _this$props2.dark,
-          data = _this$props2.data,
-          displayEntries = _this$props2.displayEntries,
-          entriesOptions = _this$props2.entriesOptions,
-          entriesLabel = _this$props2.entriesLabel,
-          exportToCSV = _this$props2.exportToCSV,
-          fixed = _this$props2.fixed,
-          hover = _this$props2.hover,
-          info = _this$props2.info,
-          infoLabel = _this$props2.infoLabel,
-          maxHeight = _this$props2.maxHeight,
-          noBottomColumns = _this$props2.noBottomColumns,
-          noRecordsFoundLabel = _this$props2.noRecordsFoundLabel,
-          order = _this$props2.order,
-          pagesAmount = _this$props2.pagesAmount,
-          paging = _this$props2.paging,
-          paginationLabel = _this$props2.paginationLabel,
-          responsive = _this$props2.responsive,
-          responsiveSm = _this$props2.responsiveSm,
-          responsiveMd = _this$props2.responsiveMd,
-          responsiveLg = _this$props2.responsiveLg,
-          responsiveXl = _this$props2.responsiveXl,
-          searching = _this$props2.searching,
-          searchLabel = _this$props2.searchLabel,
-          scrollX = _this$props2.scrollX,
-          scrollY = _this$props2.scrollY,
-          small = _this$props2.small,
-          sortable = _this$props2.sortable,
-          striped = _this$props2.striped,
-          tbodyColor = _this$props2.tbodyColor,
-          tbodyTextWhite = _this$props2.tbodyTextWhite,
-          theadColor = _this$props2.theadColor,
-          theadTextWhite = _this$props2.theadTextWhite,
-          sortRows = _this$props2.sortRows,
-          onSearch = _this$props2.onSearch,
-          onSort = _this$props2.onSort,
-          onPageChange = _this$props2.onPageChange,
-          attributes = _objectWithoutProperties(_this$props2, ["autoWidth", "bordered", "borderless", "barReverse", "btn", "className", "children", "dark", "data", "displayEntries", "entriesOptions", "entriesLabel", "exportToCSV", "fixed", "hover", "info", "infoLabel", "maxHeight", "noBottomColumns", "noRecordsFoundLabel", "order", "pagesAmount", "paging", "paginationLabel", "responsive", "responsiveSm", "responsiveMd", "responsiveLg", "responsiveXl", "searching", "searchLabel", "scrollX", "scrollY", "small", "sortable", "striped", "tbodyColor", "tbodyTextWhite", "theadColor", "theadTextWhite", "sortRows", "onSearch", "onSort", "onPageChange"]);
+      var _this$props3 = this.props,
+          autoWidth = _this$props3.autoWidth,
+          bordered = _this$props3.bordered,
+          borderless = _this$props3.borderless,
+          barReverse = _this$props3.barReverse,
+          btn = _this$props3.btn,
+          className = _this$props3.className,
+          children = _this$props3.children,
+          dark = _this$props3.dark,
+          data = _this$props3.data,
+          disableRetreatAfterSorting = _this$props3.disableRetreatAfterSorting,
+          displayEntries = _this$props3.displayEntries,
+          entriesOptions = _this$props3.entriesOptions,
+          entriesLabel = _this$props3.entriesLabel,
+          exportToCSV = _this$props3.exportToCSV,
+          fixed = _this$props3.fixed,
+          hover = _this$props3.hover,
+          info = _this$props3.info,
+          infoLabel = _this$props3.infoLabel,
+          maxHeight = _this$props3.maxHeight,
+          noBottomColumns = _this$props3.noBottomColumns,
+          noRecordsFoundLabel = _this$props3.noRecordsFoundLabel,
+          order = _this$props3.order,
+          pagesAmount = _this$props3.pagesAmount,
+          paging = _this$props3.paging,
+          paginationLabel = _this$props3.paginationLabel,
+          responsive = _this$props3.responsive,
+          responsiveSm = _this$props3.responsiveSm,
+          responsiveMd = _this$props3.responsiveMd,
+          responsiveLg = _this$props3.responsiveLg,
+          responsiveXl = _this$props3.responsiveXl,
+          searching = _this$props3.searching,
+          searchLabel = _this$props3.searchLabel,
+          scrollX = _this$props3.scrollX,
+          scrollY = _this$props3.scrollY,
+          small = _this$props3.small,
+          sortable = _this$props3.sortable,
+          striped = _this$props3.striped,
+          tbodyColor = _this$props3.tbodyColor,
+          tbodyTextWhite = _this$props3.tbodyTextWhite,
+          theadColor = _this$props3.theadColor,
+          theadTextWhite = _this$props3.theadTextWhite,
+          sortRows = _this$props3.sortRows,
+          onSearch = _this$props3.onSearch,
+          onSort = _this$props3.onSort,
+          onPageChange = _this$props3.onPageChange,
+          attributes = _objectWithoutProperties(_this$props3, ["autoWidth", "bordered", "borderless", "barReverse", "btn", "className", "children", "dark", "data", "disableRetreatAfterSorting", "displayEntries", "entriesOptions", "entriesLabel", "exportToCSV", "fixed", "hover", "info", "infoLabel", "maxHeight", "noBottomColumns", "noRecordsFoundLabel", "order", "pagesAmount", "paging", "paginationLabel", "responsive", "responsiveSm", "responsiveMd", "responsiveLg", "responsiveXl", "searching", "searchLabel", "scrollX", "scrollY", "small", "sortable", "striped", "tbodyColor", "tbodyTextWhite", "theadColor", "theadTextWhite", "sortRows", "onSearch", "onSort", "onPageChange"]);
 
       var _this$state4 = this.state,
           columns = _this$state4.columns,
@@ -3470,12 +3551,12 @@ function (_Component) {
           activePage = _this$state4.activePage,
           search = _this$state4.search,
           translateScrollHead = _this$state4.translateScrollHead;
-      var tableClasses = classNames('dataTables_wrapper dt-bootstrap4', className);
+      var tableClasses = classNames("dataTables_wrapper dt-bootstrap4", className);
       return React__default.createElement("div", {
         "data-test": "datatable",
         className: tableClasses
       }, React__default.createElement("div", {
-        className: "row".concat(barReverse ? ' flex-row-reverse' : '')
+        className: "row".concat(barReverse ? " flex-row-reverse" : "")
       }, React__default.createElement(DataTableEntries, {
         paging: paging,
         displayEntries: displayEntries,
@@ -3501,6 +3582,7 @@ function (_Component) {
         fixed: fixed,
         hover: hover,
         noBottomColumns: noBottomColumns,
+        noRecordsFoundLabel: noRecordsFoundLabel,
         responsive: responsive,
         responsiveSm: responsiveSm,
         responsiveMd: responsiveMd,
@@ -3556,7 +3638,8 @@ function (_Component) {
         filteredRows: filteredRows,
         info: info,
         pages: pages,
-        label: infoLabel
+        label: infoLabel,
+        noRecordsFoundLabel: noRecordsFoundLabel
       }), React__default.createElement(DataTablePagination, {
         activePage: activePage,
         changeActivePage: this.changeActivePage,
@@ -3580,6 +3663,7 @@ DataTable.propTypes = {
   children: propTypes.node,
   dark: propTypes.bool,
   data: propTypes.oneOfType([propTypes.object, propTypes.string]),
+  disableRetreatAfterSorting: propTypes.bool,
   displayEntries: propTypes.bool,
   entries: propTypes.number,
   entriesLabel: propTypes.oneOfType([propTypes.string, propTypes.number, propTypes.object]),
@@ -3591,6 +3675,7 @@ DataTable.propTypes = {
   infoLabel: propTypes.arrayOf(propTypes.string),
   maxHeight: propTypes.string,
   noBottomColumns: propTypes.bool,
+  noRecordsFoundLabel: propTypes.string,
   order: propTypes.arrayOf(propTypes.string),
   pagesAmount: propTypes.number,
   paging: propTypes.bool,
@@ -3627,36 +3712,37 @@ DataTable.defaultProps = {
     columns: [],
     rows: []
   },
+  disableRetreatAfterSorting: false,
   displayEntries: true,
   entries: 10,
-  entriesLabel: 'Show entries',
+  entriesLabel: "Show entries",
   entriesOptions: [10, 20, 50, 100],
   exportToCSV: false,
   fixed: false,
   hover: false,
   info: true,
-  infoLabel: ['Showing', 'to', 'of', 'entries'],
-  noRecordsFoundLabel: 'No matching records found',
+  infoLabel: ["Showing", "to", "of", "entries"],
+  noRecordsFoundLabel: "No matching records found",
   noBottomColumns: false,
   order: [],
   pagesAmount: 8,
   paging: true,
-  paginationLabel: ['Previous', 'Next'],
+  paginationLabel: ["Previous", "Next"],
   responsive: false,
   responsiveSm: false,
   responsiveMd: false,
   responsiveLg: false,
   responsiveXl: false,
   searching: true,
-  searchLabel: 'Search',
+  searchLabel: "Search",
   scrollX: false,
   scrollY: false,
   sortable: true,
   small: false,
   striped: false,
-  theadColor: '',
+  theadColor: "",
   theadTextWhite: false,
-  tbodyColor: '',
+  tbodyColor: "",
   tbodyTextWhite: false
 };
 
@@ -3947,8 +4033,8 @@ function (_React$Component) {
           props = _objectWithoutProperties(_omit, ["className", "divider", "tag", "header", "href", "active", "disabled"]);
 
       var classes = classNames({
-        'active': active,
-        'disabled': disabled,
+        active: active,
+        disabled: disabled,
         'dropdown-item': !divider && !header,
         'dropdown-header': header,
         'dropdown-divider': divider
@@ -3971,7 +4057,8 @@ function (_React$Component) {
       }, props, {
         tabIndex: tabIndex,
         className: classes,
-        onClick: this.onClick
+        onClick: this.onClick,
+        href: href
       }));
     }
   }]);
@@ -4442,7 +4529,7 @@ function (_Component) {
         width = _this.props.height * (1 / ratio);
       }
 
-      _this.setState(_objectSpread({}, _this.state, {
+      _this.setState(_objectSpread2({}, _this.state, {
         width: width,
         height: height,
         ratio: ratio
@@ -4554,7 +4641,7 @@ function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "onChange", function (event) {
       event.stopPropagation();
 
-      if (_this.props.type !== "checkbox" && _this.props.type !== "radio") {
+      if (_this.props.type !== 'checkbox' && _this.props.type !== 'radio') {
         _this.setState({
           innerValue: event.target.value,
           isPristine: false
@@ -4568,7 +4655,7 @@ function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "onInput", function (event) {
       event.stopPropagation();
 
-      if (_this.props.type !== "checkbox" && _this.props.type !== "radio") {
+      if (_this.props.type !== 'checkbox' && _this.props.type !== 'radio') {
         _this.setState({
           innerValue: event.target.value,
           isPristine: false
@@ -4631,6 +4718,7 @@ function (_React$Component) {
           outline = _this$props.outline,
           label = _this$props.label,
           labelClass = _this$props.labelClass,
+          labelId = _this$props.labelId,
           size = _this$props.size,
           success = _this$props.success,
           Tag = _this$props.tag,
@@ -4638,26 +4726,26 @@ function (_React$Component) {
           validate = _this$props.validate,
           value = _this$props.value,
           valueDefault = _this$props.valueDefault,
-          attributes = _objectWithoutProperties(_this$props, ["background", "children", "className", "containerClass", "disabled", "error", "filled", "gap", "getValue", "group", "hint", "icon", "iconBrand", "iconClass", "iconLight", "onIconClick", "onIconMouseEnter", "onIconMouseLeave", "iconRegular", "iconSize", "id", "inputRef", "noTag", "outline", "label", "labelClass", "size", "success", "tag", "type", "validate", "value", "valueDefault"]);
+          attributes = _objectWithoutProperties(_this$props, ["background", "children", "className", "containerClass", "disabled", "error", "filled", "gap", "getValue", "group", "hint", "icon", "iconBrand", "iconClass", "iconLight", "onIconClick", "onIconMouseEnter", "onIconMouseLeave", "iconRegular", "iconSize", "id", "inputRef", "noTag", "outline", "label", "labelClass", "labelId", "size", "success", "tag", "type", "validate", "value", "valueDefault"]);
 
-      var isNotEmpty = (!!this.state.innerValue || !!hint || this.state.isFocused || this.state.innerValue === 0) && type !== "checkbox" && type !== "radio";
-      var TagInput = "";
-      var formControlClass = "";
+      var isNotEmpty = (!!this.state.innerValue || !!hint || this.state.isFocused || this.state.innerValue === 0) && type !== 'checkbox' && type !== 'radio';
+      var TagInput = '';
+      var formControlClass = '';
 
-      if (type === "textarea") {
-        formControlClass = outline ? "form-control" : "md-textarea form-control";
-        TagInput = "textarea";
+      if (type === 'textarea') {
+        formControlClass = outline ? 'form-control' : 'md-textarea form-control';
+        TagInput = 'textarea';
       } else {
-        formControlClass = "form-control";
-        TagInput = "input";
+        formControlClass = 'form-control';
+        TagInput = 'input';
         attributes.type = type;
       }
 
       attributes.disabled = disabled;
-      var classes = classNames(formControlClass, size ? "form-control-".concat(size) : false, validate ? "validate" : false, filled ? "filled-in" : false, gap ? "with-gap" : false, type === "checkbox" ? gap ? false : "form-check-input" : false, type === "radio" ? "form-check-input" : false, className);
-      var containerClassFix = classNames(type === "checkbox" || type === "radio" ? typeof label === "boolean" && label ? "d-flex" : "form-check" : "md-form", group ? "form-group" : false, size ? "form-".concat(size) : false, outline && "md-outline", background && "md-bg", containerClass);
-      var iconClassFix = classNames(isNotEmpty && this.state.isFocused ? "active" : false, iconClass, "prefix");
-      var labelClassFix = classNames(isNotEmpty ? "active" : false, disabled ? "disabled" : false, type === "checkbox" ? "form-check-label" : false, type === "radio" ? "form-check-label" : false, labelClass);
+      var classes = classNames(formControlClass, size ? "form-control-".concat(size) : false, validate ? 'validate' : false, filled ? 'filled-in' : false, gap ? 'with-gap' : false, type === 'checkbox' ? gap ? false : 'form-check-input' : false, type === 'radio' ? 'form-check-input' : false, className);
+      var containerClassFix = classNames(type === 'checkbox' || type === 'radio' ? typeof label === 'boolean' && label ? 'd-flex' : 'form-check' : 'md-form', group ? 'form-group' : false, size ? "form-".concat(size) : false, outline && 'md-outline', background && 'md-bg', containerClass);
+      var iconClassFix = classNames(isNotEmpty && this.state.isFocused ? 'active' : false, iconClass, 'prefix');
+      var labelClassFix = classNames(isNotEmpty ? 'active' : false, disabled ? 'disabled' : false, type === 'checkbox' ? 'form-check-label' : false, type === 'radio' ? 'form-check-label' : false, labelClass);
 
       var renderFunction = function renderFunction() {
         return React__default.createElement(React__default.Fragment, null, icon && React__default.createElement(Fa, {
@@ -4687,7 +4775,7 @@ function (_React$Component) {
           htmlFor: id,
           "data-error": error,
           "data-success": success,
-          id: id,
+          id: labelId,
           onClick: _this2.setFocus
         }, label), children);
       };
@@ -4736,6 +4824,7 @@ Input.propTypes = {
   inputRef: propTypes.oneOfType([propTypes.object, propTypes.func]),
   label: propTypes.oneOfType([propTypes.string, propTypes.number, propTypes.object, propTypes.bool]),
   labelClass: propTypes.string,
+  labelId: propTypes.string,
   noTag: propTypes.bool,
   onBlur: propTypes.func,
   onChange: propTypes.func,
@@ -4751,17 +4840,17 @@ Input.propTypes = {
   valueDefault: propTypes.oneOfType([propTypes.number, propTypes.string])
 };
 Input.defaultProps = {
-  className: "",
-  containerClass: "",
+  className: '',
+  containerClass: '',
   disabled: false,
-  error: "",
+  error: '',
   filled: false,
   gap: false,
   group: false,
   hint: undefined,
-  icon: "",
+  icon: '',
   iconBrand: false,
-  iconClass: "",
+  iconClass: '',
   iconLight: false,
   onIconMouseEnter: function onIconMouseEnter() {},
   onIconMouseLeave: function onIconMouseLeave() {},
@@ -4770,14 +4859,15 @@ Input.defaultProps = {
   id: undefined,
   noTag: false,
   outline: false,
-  label: "",
-  labelClass: "",
-  size: "",
-  success: "",
-  tag: "div",
-  type: "text",
+  label: '',
+  labelClass: '',
+  labelId: '',
+  size: '',
+  success: '',
+  tag: 'div',
+  type: 'text',
   validate: false,
-  valueDefault: ""
+  valueDefault: ''
 };
 
 var InputGroup = function InputGroup(_ref) {
@@ -5182,6 +5272,7 @@ function (_Component) {
           className = _this$props.className,
           size = _this$props.size,
           side = _this$props.side,
+          disableFocusTrap = _this$props.disableFocusTrap,
           fullHeight = _this$props.fullHeight,
           frame = _this$props.frame,
           centered = _this$props.centered,
@@ -5219,6 +5310,19 @@ function (_Component) {
         role: role,
         'aria-hidden': 'true'
       });
+      var modal = React__default.createElement("div", _extends({
+        "data-test": "modal",
+        onKeyUp: this.handleEscape,
+        className: wrapperClasses
+      }, modalAttributes), React__default.createElement("div", {
+        className: modalDialogClasses,
+        role: "document"
+      }, React__default.createElement("div", {
+        ref: function ref(elem) {
+          return _this2.modalContent = elem;
+        },
+        className: contentClasses
+      }, children)));
       return React__default.createElement(React.Fragment, null, backdrop && React__default.createElement(reactTransitionGroup.Transition, {
         timeout: timeout,
         "in": this.state.isOpen,
@@ -5247,19 +5351,7 @@ function (_Component) {
         onExit: function onExit(node) {
           return _this2.handleOnExit('modal', node);
         }
-      }, React__default.createElement("div", _extends({
-        "data-test": "modal",
-        onKeyUp: this.handleEscape,
-        className: wrapperClasses
-      }, modalAttributes), React__default.createElement("div", {
-        className: modalDialogClasses,
-        role: "document"
-      }, React__default.createElement("div", {
-        ref: function ref(elem) {
-          return _this2.modalContent = elem;
-        },
-        className: contentClasses
-      }, children)))));
+      }, !disableFocusTrap ? React__default.createElement(FocusTrap, null, modal) : modal));
     }
   }]);
 
@@ -5271,6 +5363,7 @@ Modal.defaultProps = {
   backdrop: true,
   backdropTransitionTimeout: 150,
   fade: true,
+  disableFocusTrap: false,
   isOpen: false,
   keyboard: true,
   modalTransitionTimeout: 300,
@@ -5288,6 +5381,7 @@ Modal.propTypes = {
   className: propTypes.string,
   contentClassName: propTypes.string,
   fade: propTypes.bool,
+  disableFocusTrap: propTypes.bool,
   frame: propTypes.bool,
   fullHeight: propTypes.bool,
   hiddenModal: propTypes.func,
@@ -5704,18 +5798,35 @@ var NavLink = function NavLink(props) {
       disabled = props.disabled,
       active = props.active,
       to = props.to,
-      attributes = _objectWithoutProperties(props, ["children", "className", "disabled", "active", "to"]);
+      link = props.link,
+      attributes = _objectWithoutProperties(props, ["children", "className", "disabled", "active", "to", "link"]);
 
-  var classes = classNames('nav-link', disabled ? 'disabled' : 'Ripple-parent', active && 'active', className);
-  return React__default.createElement(reactRouterDom.NavLink, _extends({
-    "data-test": "nav-link",
-    className: classes,
-    onMouseUp: handleClick,
-    onTouchStart: handleClick,
-    to: to
-  }, attributes), children, props.disabled ? false : React__default.createElement(Waves, {
-    cursorPos: cursorPos
-  }));
+  var classes = classNames("nav-link", disabled ? "disabled" : "Ripple-parent", active && "active", className);
+  var rednerLink;
+
+  if (link) {
+    rednerLink = React__default.createElement(reactRouterDom.Link, _extends({
+      "data-test": "nav-link",
+      className: classes,
+      onMouseUp: handleClick,
+      onTouchStart: handleClick,
+      to: to
+    }, attributes), children, props.disabled ? false : React__default.createElement(Waves, {
+      cursorPos: cursorPos
+    }));
+  } else {
+    rednerLink = React__default.createElement(reactRouterDom.NavLink, _extends({
+      "data-test": "nav-link",
+      className: classes,
+      onMouseUp: handleClick,
+      onTouchStart: handleClick,
+      to: to
+    }, attributes), children, props.disabled ? false : React__default.createElement(Waves, {
+      cursorPos: cursorPos
+    }));
+  }
+
+  return rednerLink;
 };
 
 NavLink.propTypes = {
@@ -5723,12 +5834,14 @@ NavLink.propTypes = {
   className: propTypes.string,
   disabled: propTypes.bool,
   to: propTypes.string,
-  active: propTypes.bool
+  active: propTypes.bool,
+  link: propTypes.bool
 };
 NavLink.defaultProps = {
   active: false,
-  className: '',
-  disabled: false
+  className: "",
+  disabled: false,
+  link: false
 };
 
 var Notification =
@@ -5846,121 +5959,199 @@ Notification.defaultProps = {
   closeClassName: 'text-dark'
 };
 
-var Popper = function Popper(_ref) {
-  var children = _ref.children,
-      clickable = _ref.clickable,
-      domElement = _ref.domElement,
-      modifiers = _ref.modifiers,
-      id = _ref.id,
-      isVisible = _ref.isVisible,
-      onChange = _ref.onChange,
-      placement = _ref.placement,
-      popover = _ref.popover,
-      style = _ref.style,
-      tag = _ref.tag;
+var css$7 = ".popover {\n  width: auto;\n  background-color: white;\n  color: #97999b;\n  text-align: center;\n  display: inline-block;\n  border-radius: 3px;\n  position: absolute;\n  font-size: 0.83em;\n  font-weight: normal;\n  border: 1px rgb(0, 0, 0) solid;\n  /* z-index: 200000; */\n  z-index: 10;\n  /* max-width: initial; */\n  max-width: 274px;\n  text-align: start;\n  background-color: #fff;\n  border: 1px solid rgba(0, 0, 0, 0.2);\n  border-radius: 0.3rem;\n  opacity: 0;\n  transition: opacity 0.3s, visibility 0.3s;\n  visibility: hidden;\n}\n\n.show.popover {\n  opacity: 1;\n  visibility: visible;\n}\n\n.popover-body {\n  color: #6c6e71;\n}\n\n.popover .popover_arrow {\n  width: 0;\n  height: 0;\n  border-style: solid;\n  position: absolute;\n  margin: 6px;\n  color: transparent;\n}\n\n.popover[x-placement^='top'] {\n  margin-bottom: 15px;\n}\n\n.popover[x-placement^='top'] .popover_arrow {\n  border-width: 8px 8px 0 8px;\n  border-color: #d6d6d6 transparent transparent transparent;\n  bottom: -8px;\n  margin-bottom: 0;\n}\n\n.popover[x-placement^='top'] .popover_arrow::before {\n  content: '';\n  display: inline-block;\n  position: absolute;\n  left: -8px;\n  bottom: 1.5px;\n  border: solid;\n  border-width: 8px 8px 0 8px;\n  border-color: white transparent transparent transparent;\n}\n\n.popover[x-placement^='bottom'] {\n  margin-top: 15px;\n}\n\n.popover[x-placement^='bottom'] .popover_arrow {\n  border-width: 0 8px 8px 8px;\n  border-color: transparent transparent #d6d6d6 transparent;\n  top: -8px;\n  margin-top: 0;\n}\n\n.popover[x-placement^='bottom'] .popover_arrow::before {\n  content: '';\n  display: inline-block;\n  position: absolute;\n  left: -8px;\n  top: 1.45px;\n  border: solid;\n  border-width: 0 8px 8px 8px;\n  border-color: transparent transparent white transparent;\n}\n\n.popover[x-placement^='right'] {\n  margin-left: 15px;\n}\n\n.popover[x-placement^='right'] .popover_arrow {\n  border-width: 8px 8px 8px 0;\n  border-color: transparent #d6d6d6 transparent transparent;\n  left: -8px;\n  margin-left: 0;\n}\n\n.popover[x-placement^='right'] .popover_arrow::before {\n  content: '';\n  display: inline-block;\n  position: absolute;\n  top: -8px;\n  left: 1.45px;\n  border: solid;\n  border-width: 8px 8px 8px 0;\n  border-color: transparent white transparent transparent;\n}\n\n.popover[x-placement^='left'] {\n  margin-right: 15px;\n}\n\n.popover[x-placement^='left'] .popover_arrow {\n  border-width: 8px 0 8px 8px;\n  border-color: transparent transparent transparent #d6d6d6;\n  right: -8px;\n  margin-right: 0;\n}\n\n.popover[x-placement^='left'] .popover_arrow::before {\n  content: '';\n  display: inline-block;\n  position: absolute;\n  top: -8px;\n  right: 1.45px;\n  border: solid;\n  border-width: 8px 0 8px 8px;\n  border-color: transparent transparent transparent white;\n}\n\n\n.tooltip {\n  width: auto;\n  background-color: black;\n  color: white;\n  text-align: center;\n  display: inline-block;\n  border-radius: 3px;\n  position: absolute;\n  /* font-size: 0.83em; */\n  font-weight: normal;\n  border: 1px rgb(0, 0, 0) solid;\n  /* z-index: 200000; */\n  z-index: 15;\n  /* max-width: initial; */\n  max-width: 274px;\n  text-align: start;\n  border: 1px solid rgba(0, 0, 0, 0.2);\n  border-radius: 0.3rem;\n  opacity: 0;\n  transition: opacity 0.3s, visibility 0.3s;\n  visibility: hidden;\n}\n\n.show.tooltip {\n  opacity: 1;\n  visibility: visible;\n}\n\n\n.tooltip .popover_arrow {\n  width: 0;\n  height: 0;\n  border-style: solid;\n  position: absolute;\n  margin: 6px;\n  color: transparent;\n}\n\n.tooltip[x-placement^='top'] {\n  margin-bottom: 5px;\n}\n\n.tooltip[x-placement^='top'] .popover_arrow {\n  border-width: 6px 6px 0 6px;\n  border-color: #131313 transparent transparent transparent;\n  bottom: -6px;\n  margin-bottom: 0;\n}\n\n.tooltip[x-placement^='top'] .popover_arrow::before {\n  content: '';\n  display: inline-block;\n  position: absolute;\n  left: -6px;\n  bottom: 1.5px;\n  border: solid;\n  border-width: 6px 6px 0 6px;\n  border-color: black transparent transparent transparent;\n}\n\n.tooltip[x-placement^='bottom'] {\n  margin-top: 5px;\n}\n\n.tooltip[x-placement^='bottom'] .popover_arrow {\n  border-width: 0 6px 6px 6px;\n  border-color: transparent transparent #131313 transparent;\n  top: -6px;\n  margin-top: 0;\n}\n\n.tooltip[x-placement^='bottom'] .popover_arrow::before {\n  content: '';\n  display: inline-block;\n  position: absolute;\n  left: -6px;\n  top: 1.45px;\n  border: solid;\n  border-width: 0 6px 6px 6px;\n  border-color: transparent transparent black transparent;\n}\n\n.tooltip[x-placement^='right'] {\n  margin-left: 5px;\n}\n\n.tooltip[x-placement^='right'] .popover_arrow {\n  border-width: 6px 6px 6px 0;\n  border-color: transparent #131313 transparent transparent;\n  left: -6px;\n  margin-left: 0;\n}\n\n.tooltip[x-placement^='right'] .popover_arrow::before {\n  content: '';\n  display: inline-block;\n  position: absolute;\n  top: -6px;\n  left: 1.45px;\n  border: solid;\n  border-width: 6px 6px 6px 0;\n  border-color: transparent black transparent transparent;\n}\n\n.tooltip[x-placement^='left'] {\n  margin-right: 5px;\n}\n\n.tooltip[x-placement^='left'] .popover_arrow {\n  border-width: 6px 0 6px 6px;\n  border-color: transparent transparent transparent #131313;\n  right: -6px;\n  margin-right: 0;\n}\n\n.tooltip[x-placement^='left'] .popover_arrow::before {\n  content: '';\n  display: inline-block;\n  position: absolute;\n  top: -6px;\n  right: 1.45px;\n  border: solid;\n  border-width: 6px 0 6px 6px;\n  border-color: transparent transparent transparent black;\n}\n\n";
+styleInject(css$7);
 
-  var _useState = React.useState(isVisible),
-      _useState2 = _slicedToArray(_useState, 2),
-      visible = _useState2[0],
-      setVisible = _useState2[1];
+var Popover =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(Popover, _React$Component);
 
-  React.useEffect(function () {
-    setVisible(isVisible);
-  }, [isVisible]);
-  React.useEffect(function () {
-    onChange && onChange(visible);
-  }, [onChange, visible]);
-  React.useEffect(function () {
-    window.addEventListener('click', handleClick);
-    return function () {
-      return window.removeEventListener('click', handleClick);
-    };
-  });
+  function Popover(props) {
+    var _this;
 
-  function handleClick(e) {
-    var element = document.elementsFromPoint(e.clientX, e.clientY).find(function (el) {
-      return el.dataset.popper === id;
+    _classCallCheck(this, Popover);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Popover).call(this, props));
+
+    _defineProperty(_assertThisInitialized(_this), "setPopperJS", function () {
+      if (_this.state.showPopper) {
+        _this.state.popperJS ? _this.state.popperJS.scheduleUpdate() : _this.createPopper();
+        setTimeout(function () {
+          return clearInterval(_this.timer);
+        }, 1000);
+      }
     });
-    if (element) return;
-    setVisible(false);
+
+    _defineProperty(_assertThisInitialized(_this), "createPopper", function () {
+      if (_this.referenceElm && _this.popoverWrapperRef) _this.setState({
+        popperJS: new Popper(_this.referenceElm, _this.popoverWrapperRef, _objectSpread2({
+          placement: _this.props.placement
+        }, _this.props.modifiers), function () {
+          return setTimeout(function () {
+            _this.state.popperJS.scheduleUpdate();
+          }, 10);
+        })
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "doToggle", function (toggler) {
+      _this.setState({
+        showPopper: toggler && true
+      }, function () {
+        if (_this.state.showPopper) _this.setState({
+          visible: typeof toggler !== 'undefined' ? toggler : !_this.state.visible
+        }, function () {
+          _this.createPopper();
+
+          _this.state.popperJS.scheduleUpdate();
+        });
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "handleClick", function (e) {
+      var target = e.target;
+
+      if (_this.popoverWrapperRef && _this.state.showPopper) {
+        if (_this.popoverWrapperRef.contains(target) || _this.referenceElm.contains(target) || target === _this.referenceElm) return;
+
+        _this.doToggle(false);
+      }
+    });
+
+    _this.state = {
+      popperJS: null,
+      visible: props.isVisible,
+      showPopper: props.isVisible
+    };
+    _this.popoverWrapperRef = React__default.createRef();
+    _this.referenceElm = React__default.createRef();
+    return _this;
   }
 
-  var Wrapper = children[0];
-  var Content = children[1];
-  var Tag = tag;
-  var tooltipClasses = classNames("fade", popover ? "popover bs-popover-".concat(placement, " popover-enter-done") : "tooltip bs-tooltip-".concat(placement), visible ? "show" : "");
-  var contentClasses = classNames(!popover && "tooltip-inner");
-  return React__default.createElement(reactPopper.Manager, {
-    "data-test": "popper"
-  }, React__default.createElement(reactPopper.Reference, null, function (_ref2) {
-    var ref = _ref2.ref;
-    return !domElement ? React__default.createElement(Wrapper.type, _extends({}, Wrapper.props, {
-      onMouseEnter: function onMouseEnter() {
-        return !clickable && setVisible(true);
-      },
-      onMouseLeave: function onMouseLeave() {
-        return !clickable && setVisible(false);
-      },
-      onTouchStart: function onTouchStart() {
-        return !clickable && setVisible(true);
-      },
-      onTouchEnd: function onTouchEnd() {
-        return !clickable && setVisible(false);
-      },
-      onMouseDown: function onMouseDown() {
-        return clickable && setVisible(!visible);
-      },
-      innerRef: ref,
-      "data-popper": id
-    })) : React__default.createElement(Wrapper.type, _extends({}, Wrapper.props, {
-      onMouseEnter: function onMouseEnter() {
-        return !clickable && setVisible(true);
-      },
-      onMouseLeave: function onMouseLeave() {
-        return !clickable && setVisible(false);
-      },
-      onTouchStart: function onTouchStart() {
-        return !clickable && setVisible(true);
-      },
-      onTouchEnd: function onTouchEnd() {
-        return !clickable && setVisible(false);
-      },
-      onMouseDown: function onMouseDown() {
-        return clickable && setVisible(!visible);
-      },
-      ref: ref,
-      "data-popper": id
-    }));
-  }), visible && Content.props.children && React__default.createElement(Tag, {
-    style: style
-  }, React__default.createElement(reactPopper.Popper, {
-    modifiers: modifiers,
-    eventsEnabled: true,
-    positionFixed: false,
-    placement: placement
-  }, function (_ref3) {
-    var placement = _ref3.placement,
-        ref = _ref3.ref,
-        style = _ref3.style,
-        arrowProps = _ref3.arrowProps;
-    return React__default.createElement(Tag, {
-      ref: ref,
-      style: style,
-      "data-placement": placement,
-      className: tooltipClasses,
-      "data-popper": id
-    }, React__default.createElement(Content.type, _extends({}, Content.props, {
-      className: contentClasses
-    }), Content.props.children), React__default.createElement("span", {
-      ref: arrowProps.ref,
-      style: arrowProps.style,
-      "data-placement": placement,
-      className: "arrow"
-    }));
-  })));
-};
+  _createClass(Popover, [{
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps, prevState) {
+      var showPopper = this.state.showPopper;
+      var _this$props = this.props,
+          isVisible = _this$props.isVisible,
+          onChange = _this$props.onChange;
+      this.setPopperJS();
+      if (prevProps.isVisible !== isVisible && isVisible !== showPopper && showPopper !== prevProps.showPopper) this.setState({
+        showPopper: isVisible
+      });
+      if (onChange && showPopper !== prevState.showPopper) onChange(showPopper);
+      if (showPopper && prevState.showPopper !== showPopper) this.createPopper();
+    }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this2 = this;
 
-Popper.propTypes = {
+      this.timer = setInterval(function () {
+        return _this2.setPopperJS();
+      }, 3);
+      document.addEventListener('click', this.handleClick);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this3 = this;
+
+      var _this$props2 = this.props,
+          children = _this$props2.children,
+          className = _this$props2.className,
+          clickable = _this$props2.clickable,
+          domElement = _this$props2.domElement,
+          modifiers = _this$props2.modifiers,
+          id = _this$props2.id,
+          isVisible = _this$props2.isVisible,
+          onChange = _this$props2.onChange,
+          placement = _this$props2.placement,
+          popover = _this$props2.popover,
+          style = _this$props2.style,
+          Tag = _this$props2.tag,
+          attributes = _objectWithoutProperties(_this$props2, ["children", "className", "clickable", "domElement", "modifiers", "id", "isVisible", "onChange", "placement", "popover", "style", "tag"]);
+
+      var _this$state = this.state,
+          visible = _this$state.visible,
+          showPopper = _this$state.showPopper;
+      var popper = children[1];
+      var Wrapper = children[0];
+      return React__default.createElement(React__default.Fragment, null, !domElement ? React__default.createElement(Wrapper.type, _extends({}, Wrapper.props, {
+        onMouseEnter: function onMouseEnter() {
+          return !clickable && _this3.doToggle(true);
+        },
+        onMouseLeave: function onMouseLeave() {
+          return !clickable && !popover && setTimeout(function () {
+            return _this3.doToggle(false);
+          }, 0);
+        },
+        onTouchStart: function onTouchStart() {
+          return !clickable && _this3.doToggle(true);
+        },
+        onTouchEnd: function onTouchEnd() {
+          return !clickable && !popover && _this3.doToggle(false);
+        },
+        onMouseDown: function onMouseDown() {
+          clickable && _this3.doToggle(!showPopper);
+          setTimeout(function () {
+            return _this3.setPopperJS();
+          }, 100);
+        },
+        onMouseUp: function onMouseUp() {
+          return setTimeout(function () {
+            return _this3.setPopperJS();
+          }, 0);
+        },
+        innerRef: function innerRef(ref) {
+          return _this3.referenceElm = ref;
+        },
+        "data-popper": id
+      })) : React__default.createElement(Wrapper.type, _extends({}, Wrapper.props, {
+        onMouseEnter: function onMouseEnter() {
+          return !clickable && _this3.doToggle(true);
+        },
+        onMouseLeave: function onMouseLeave() {
+          return !clickable && !popover && setTimeout(function () {
+            return _this3.doToggle(false);
+          }, 0);
+        },
+        onTouchStart: function onTouchStart() {
+          return !clickable && _this3.doToggle(true);
+        },
+        onTouchEnd: function onTouchEnd() {
+          return !clickable && !popover && _this3.doToggle(false);
+        },
+        onMouseDown: function onMouseDown() {
+          return clickable && _this3.doToggle(!showPopper);
+        },
+        onMouseUp: function onMouseUp() {
+          return setTimeout(function () {
+            return _this3.setPopperJS();
+          }, 0);
+        },
+        ref: function ref(_ref) {
+          return _this3.referenceElm = _ref;
+        },
+        "data-popper": id
+      })), showPopper && React__default.createElement(Tag, _extends({
+        ref: function ref(_ref2) {
+          return _this3.popoverWrapperRef = _ref2;
+        },
+        className: classNames(visible && 'show', popover ? 'popover' : 'tooltip px-2', className),
+        "data-popper": id
+      }, attributes), popper, React__default.createElement("span", {
+        "x-arrow": "",
+        className: "popover_arrow"
+      })));
+    }
+  }]);
+
+  return Popover;
+}(React__default.Component);
+
+Popover.propTypes = {
   children: propTypes.node,
   clickable: propTypes.bool,
   domElement: propTypes.bool,
@@ -5972,7 +6163,7 @@ Popper.propTypes = {
   style: propTypes.objectOf(propTypes.string),
   tag: propTypes.string
 };
-Popper.defaultProps = {
+Popover.defaultProps = {
   clickable: false,
   domElement: false,
   id: 'popper',
@@ -6051,7 +6242,7 @@ var Progress = function Progress(_ref) {
   var progressBarClasses = classNames(preloader ? 'indeterminate' : 'progress-bar', barClassName ? barClassName : null, animated ? 'progress-bar-animated' : null, color ? "bg-".concat(color) : null, striped || animated ? 'progress-bar-striped' : null);
   var computedHeight = height ? height : children && '1rem';
 
-  var computedWrapperStyle = _objectSpread({}, wrapperStyle, {
+  var computedWrapperStyle = _objectSpread2({}, wrapperStyle, {
     height: computedHeight
   });
 
@@ -6101,6 +6292,294 @@ Progress.defaultProps = {
   striped: false,
   wrapperStyle: {},
   value: 0
+};
+
+var Rating = function Rating(props) {
+  var _useState = React.useState([]),
+      _useState2 = _slicedToArray(_useState, 2),
+      data = _useState2[0],
+      setData = _useState2[1];
+
+  var _useState3 = React.useState(null),
+      _useState4 = _slicedToArray(_useState3, 2),
+      hovered = _useState4[0],
+      setHovered = _useState4[1];
+
+  var _useState5 = React.useState({
+    title: '',
+    index: null
+  }),
+      _useState6 = _slicedToArray(_useState5, 2),
+      choosed = _useState6[0],
+      setChoosed = _useState6[1];
+
+  var _useState7 = React.useState(''),
+      _useState8 = _slicedToArray(_useState7, 2),
+      feedbackValue = _useState8[0],
+      setFeedbackValue = _useState8[1];
+
+  var _useState9 = React.useState(null),
+      _useState10 = _slicedToArray(_useState9, 2),
+      openedForm = _useState10[0],
+      setOpenedForm = _useState10[1];
+
+  var onDocumentClick = function onDocumentClick(e) {
+    if (!e.target.closest('.popover')) {
+      setOpenedForm(null);
+    }
+  };
+
+  React.useEffect(function () {
+    window.addEventListener('click', onDocumentClick);
+    return function () {
+      return window.removeEventListener('click', onDocumentClick);
+    };
+  }, []);
+  React.useEffect(function () {
+    setData(props.data);
+  }, [props.data]);
+  React.useEffect(function () {
+    var choosedIndex = data.findIndex(function (item) {
+      return item.choosed;
+    });
+    if (choosedIndex !== -1) setChoosed({
+      title: data[choosedIndex].tooltip,
+      index: choosedIndex
+    });
+  }, [data]);
+  React.useEffect(function () {
+    if (props.getValue) {
+      var title = choosed.title,
+          index = choosed.index;
+      index = index !== null ? index + 1 : index;
+      props.getValue({
+        title: title,
+        value: index
+      });
+    }
+  }, [choosed, props]);
+
+  var handleMouseEnter = function handleMouseEnter(_, index) {
+    setHovered(index);
+  };
+
+  var handleMouseLeave = function handleMouseLeave() {
+    setHovered(null);
+  };
+
+  var handleClick = function handleClick(title, index, e) {
+    e.stopPropagation();
+
+    if (title === choosed.title && index === choosed.index) {
+      setChoosed({
+        title: '',
+        index: null
+      });
+      feedback && setOpenedForm(null);
+    } else {
+      setChoosed({
+        title: title,
+        index: index
+      });
+      feedback && setTimeout(function () {
+        setOpenedForm(index);
+      }, 1);
+    }
+  };
+
+  var onCloseHanlder = function onCloseHanlder() {
+    setFeedbackValue('');
+    setOpenedForm(null);
+  };
+
+  var feedbackValueHandler = function feedbackValueHandler(e) {
+    setFeedbackValue(e.target.value);
+  };
+
+  var Tag = props.tag,
+      containerClassName = props.containerClassName,
+      iconClassName = props.iconClassName,
+      iconFaces = props.iconFaces,
+      iconSize = props.iconSize,
+      iconRegular = props.iconRegular,
+      fillClassName = props.fillClassName,
+      fillColors = props.fillColors,
+      getValue = props.getValue,
+      feedback = props.feedback,
+      submitHandler = props.submitHandler,
+      commonAttributes = _objectWithoutProperties(props, ["tag", "containerClassName", "iconClassName", "iconFaces", "iconSize", "iconRegular", "fillClassName", "fillColors", "getValue", "feedback", "submitHandler"]);
+
+  var containerClasses = classNames('mdb-rating', 'd-flex', 'justify-content-start', 'align-items-center', containerClassName);
+  var renderedIcons = [];
+
+  if (data.length) {
+    renderedIcons = data.map(function (_ref, index) {
+      var _ref$icon = _ref.icon,
+          icon = _ref$icon === void 0 ? 'star' : _ref$icon,
+          tooltip = _ref.tooltip,
+          far = _ref.far,
+          size = _ref.size,
+          _ = _ref.choosed,
+          itemAttributes = _objectWithoutProperties(_ref, ["icon", "tooltip", "far", "size", "choosed"]);
+
+      var isChoosed = choosed.index !== null;
+      var isHovered = hovered !== null;
+      var isFormOpened = openedForm !== null;
+      var isFormActive = feedback && isFormOpened && openedForm === index;
+      var toFill = false;
+
+      if (isChoosed) {
+        toFill = index <= choosed.index;
+
+        if (isHovered && hovered > choosed.index) {
+          toFill = index <= hovered;
+        }
+      } else if (isHovered) {
+        toFill = index <= hovered;
+      }
+
+      var fillColor = '';
+
+      if (fillColors) {
+        var current = null;
+
+        if (isChoosed) {
+          current = choosed.index;
+          if (isHovered) current = hovered;
+        } else if (isHovered) current = hovered;
+
+        var isCustom = Array.isArray(fillColors);
+        var defaultFillColors = ['oneStar', 'twoStars', 'threeStars', 'fourStars', 'fiveStars'];
+
+        if (current !== null) {
+          fillColor = isCustom ? fillColors[current] : defaultFillColors[current];
+        }
+      }
+
+      var iconClasses = classNames('py-2 px-1 rate-popover', toFill && (fillColors ? fillColor : fillClassName), iconClassName);
+      var renderIcon = icon;
+
+      if (iconFaces) {
+        var faces = ['angry', 'frown', 'meh', 'smile', 'laugh'];
+        renderIcon = 'meh-blank';
+
+        if (isChoosed && index <= choosed.index) {
+          renderIcon = faces[choosed.index];
+          if (isHovered) renderIcon = faces[hovered];
+        } else if (isHovered && index <= hovered) {
+          renderIcon = faces[hovered];
+        }
+      }
+
+      var tooltipContent = tooltip;
+
+      if (isFormActive) {
+        tooltipContent = React__default.createElement("form", {
+          onSubmit: function onSubmit(e) {
+            submitHandler(e, tooltip, openedForm + 1, feedbackValue);
+            onCloseHanlder();
+          }
+        }, React__default.createElement(mdbreact.MDBPopoverHeader, null, tooltip), React__default.createElement(mdbreact.MDBPopoverBody, null, React__default.createElement("textarea", {
+          type: "text",
+          className: "md-textarea form-control py-0",
+          value: feedbackValue,
+          onChange: feedbackValueHandler // style={{ resize: 'none' }}
+
+        }), React__default.createElement("div", {
+          className: "d-flex align-items-center justify-content-around mt-2"
+        }, React__default.createElement(mdbreact.MDBBtn, {
+          type: "submit",
+          color: "primary",
+          size: "sm"
+        }, "Submit!"), React__default.createElement("button", {
+          onMouseDown: onCloseHanlder,
+          style: {
+            backgroundColor: '#fff',
+            border: 'none',
+            padding: '0.5rem 1.6rem'
+          }
+        }, "Close"))));
+      }
+
+      return React__default.createElement(mdbreact.MDBTooltip, {
+        key: tooltip,
+        domElement: true,
+        placement: "top",
+        tag: "span",
+        popover: isFormActive,
+        isVisible: isFormActive,
+        clickable: isFormActive
+      }, React__default.createElement("span", null, React__default.createElement(mdbreact.Fa, _extends({
+        style: {
+          cursor: 'pointer'
+        }
+      }, commonAttributes, itemAttributes, {
+        icon: renderIcon,
+        size: size || iconSize,
+        far: far || iconRegular,
+        className: iconClasses,
+        "data-index": index,
+        "data-original-title": tooltip,
+        onMouseEnter: function onMouseEnter() {
+          return handleMouseEnter(tooltip, index);
+        },
+        onMouseLeave: handleMouseLeave,
+        onClick: function onClick(e) {
+          return handleClick(tooltip, index, e);
+        }
+      }))), React__default.createElement("div", {
+        style: {
+          userSelect: 'none'
+        }
+      }, tooltipContent));
+    });
+  }
+
+  return React__default.createElement(Tag, {
+    className: containerClasses
+  }, renderedIcons);
+};
+
+Rating.propTypes = {
+  containerClassName: propTypes.string,
+  data: propTypes.arrayOf(propTypes.shape({
+    icon: propTypes.string,
+    tooltip: propTypes.string,
+    choosed: propTypes.bool
+  })),
+  feedback: propTypes.bool,
+  fillClassName: propTypes.string,
+  fillColors: propTypes.oneOfType([propTypes.bool, propTypes.arrayOf(propTypes.string)]),
+  iconClassName: propTypes.string,
+  iconFaces: propTypes.bool,
+  iconSize: propTypes.string,
+  iconRegular: propTypes.bool,
+  tag: propTypes.string,
+  getValue: propTypes.func,
+  submitHandler: propTypes.func
+};
+Rating.defaultProps = {
+  containerClassName: '',
+  data: [{
+    tooltip: 'Very Bad'
+  }, {
+    tooltip: 'Poor'
+  }, {
+    tooltip: 'Ok'
+  }, {
+    tooltip: 'Good'
+  }, {
+    tooltip: 'Excellent'
+  }],
+  feedback: false,
+  fillClassName: 'fiveStars',
+  iconClassName: '',
+  iconSize: '1x',
+  iconRegular: false,
+  tag: 'div',
+  submitHandler: function submitHandler(e) {
+    return e.preventDefault();
+  }
 };
 
 var Row = function Row(props) {
@@ -6628,11 +7107,12 @@ exports.MDBNotification = Notification;
 exports.MDBPageItem = PageItem;
 exports.MDBPageNav = PageLink;
 exports.MDBPagination = Pagination;
-exports.MDBPopover = Popper;
+exports.MDBPopover = Popover;
 exports.MDBPopoverBody = PopoverBody;
 exports.MDBPopoverHeader = PopoverHeader;
-exports.MDBPopper = Popper;
+exports.MDBPopper = Popover;
 exports.MDBProgress = Progress;
+exports.MDBRating = Rating;
 exports.MDBRow = Row;
 exports.MDBTabContent = TabContent;
 exports.MDBTabPane = TabPane;
@@ -6640,7 +7120,7 @@ exports.MDBTable = Table;
 exports.MDBTableBody = TableBody;
 exports.MDBTableFoot = TableFoot;
 exports.MDBTableHead = TableHead;
-exports.MDBTooltip = Popper;
+exports.MDBTooltip = Popover;
 exports.MDBTreeview = Treeview;
 exports.MDBTreeviewItem = TreeviewItem;
 exports.MDBTreeviewList = TreeviewList;
@@ -6663,11 +7143,12 @@ exports.Notification = Notification;
 exports.PageItem = PageItem;
 exports.PageLink = PageLink;
 exports.Pagination = Pagination;
-exports.Popover = Popper;
+exports.Popover = Popover;
 exports.PopoverBody = PopoverBody;
 exports.PopoverHeader = PopoverHeader;
-exports.Popper = Popper;
+exports.Popper = Popover;
 exports.Progress = Progress;
+exports.Rating = Rating;
 exports.Row = Row;
 exports.TabContent = TabContent;
 exports.TabPane = TabPane;
@@ -6675,7 +7156,7 @@ exports.Table = Table;
 exports.TableBody = TableBody;
 exports.TableFoot = TableFoot;
 exports.TableHead = TableHead;
-exports.Tooltip = Popper;
+exports.Tooltip = Popover;
 exports.Treeview = Treeview;
 exports.TreeviewItem = TreeviewItem;
 exports.TreeviewList = TreeviewList;

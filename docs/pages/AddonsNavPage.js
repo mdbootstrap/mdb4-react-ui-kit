@@ -5,7 +5,7 @@ import MenuLink from "./../components/menuLink";
 const AddonsNavPage = () => {
   return (
     <>
-      <MDBEdgeHeader color="indigo darken-3" className="sectionPage" />    
+      <MDBEdgeHeader color="indigo darken-3" className="sectionPage" />
       <MDBAnimation type="zoomIn" duration="500ms">
         <MDBContainer>
           <MDBRow>
@@ -21,6 +21,7 @@ const AddonsNavPage = () => {
                   <MenuLink to="/addons/iframe" title="Iframe" />
                   <MenuLink to="/addons/notifications" title="Notifications" />
                   <MenuLink to="/addons/treeview" title="Treeview" />
+                  <MenuLink to="/addons/rating" title="Rating" />
                 </ul>
               </MDBJumbotron>
             </MDBCol>
