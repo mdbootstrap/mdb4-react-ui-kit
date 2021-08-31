@@ -1,13 +1,13 @@
-import React, { useState, Component, Fragment, useEffect, useRef, useContext } from 'react';
+import React, { useState, Component, Fragment, useRef, useEffect, useContext } from 'react';
 import classNames from 'classnames';
 import { Transition } from 'react-transition-group';
 import ReactDOM from 'react-dom';
+import { MDBIframe, MDBBox, MDBPopoverHeader, MDBPopoverBody, MDBBtn, MDBTooltip, Fa as Fa$1 } from 'mdbreact';
 import { Manager, Popper, Reference } from 'react-popper';
 import NumericInput from 'react-numeric-input';
 import FocusTrap from 'focus-trap-react';
 import { NavLink as NavLink$1, Link } from 'react-router-dom';
 import Popper$1 from 'popper.js';
-import { MDBPopoverHeader, MDBPopoverBody, MDBBtn, MDBTooltip, Fa as Fa$1 } from 'mdbreact';
 
 function _typeof(obj) {
   if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
@@ -609,6 +609,56 @@ Badge.propTypes = {
   className: propTypes.string
 };
 
+var Box = function Box(props) {
+  var Tag = props.tag,
+      className = props.className,
+      children = props.children,
+      display = props.display,
+      justifyContent = props.justifyContent,
+      flex = props.flex,
+      alignItems = props.alignItems,
+      alignContent = props.alignContent,
+      alignSelf = props.alignSelf,
+      color = props.color,
+      bgColor = props.bgColor,
+      m = props.m,
+      mt = props.mt,
+      mtsm = props.mtsm,
+      mr = props.mr,
+      mb = props.mb,
+      ml = props.ml,
+      mx = props.mx,
+      my = props.my,
+      p = props.p,
+      pt = props.pt,
+      pr = props.pr,
+      pb = props.pb,
+      pl = props.pl,
+      px = props.px,
+      py = props.py,
+      attributes = _objectWithoutProperties(props, ["tag", "className", "children", "display", "justifyContent", "flex", "alignItems", "alignContent", "alignSelf", "color", "bgColor", "m", "mt", "mtsm", "mr", "mb", "ml", "mx", "my", "p", "pt", "pr", "pb", "pl", "px", "py"]);
+
+  var marginOrPadding = function marginOrPadding(props, suffix) {
+    if (props !== undefined) {
+      return "".concat(suffix, "-").concat(props);
+    }
+  };
+
+  var classes = classNames(display && "d-".concat(display), justifyContent && "justify-content-".concat(justifyContent), flex && "flex-".concat(flex), alignItems && "align-items-".concat(alignItems), alignContent && "align-content-".concat(alignContent), alignSelf && "align-self-".concat(alignSelf), color && "".concat(color, "-text"), bgColor && "bg-".concat(bgColor), marginOrPadding(m, 'm'), marginOrPadding(mt, 'mt'), marginOrPadding(mr, 'mr'), marginOrPadding(mb, 'mb'), marginOrPadding(ml, 'ml'), marginOrPadding(mx, 'mx'), marginOrPadding(my, 'my'), marginOrPadding(p, 'p'), marginOrPadding(pt, 'pt'), marginOrPadding(pr, 'pr'), marginOrPadding(pb, 'pb'), marginOrPadding(pl, 'pl'), marginOrPadding(px, 'px'), marginOrPadding(py, 'py'), className);
+  var isEmptyClass = classes !== '' ? classes : null;
+  return React.createElement(Tag, _extends({}, attributes, {
+    className: isEmptyClass
+  }), children);
+};
+
+Box.defaultProps = {
+  tag: 'div'
+};
+Box.propTypes = {
+  children: propTypes.node,
+  className: propTypes.string
+};
+
 function omit(obj, omitKeys) {
   var result = {};
   Object.keys(obj).forEach(function (key) {
@@ -638,8 +688,8 @@ var getColorClass = function getColorClass(color) {
   var colorClasses = "";
   colorArray.forEach(function (color) {
     if (specialColors.includes(color)) {
-      if (color.includes("dark")) {
-        color.replace("-", "-color-");
+      if (color.includes('dark')) {
+        color.replace('-', '-color-');
         colorClasses += "".concat(color, " ");
       } else {
         colorClasses += "".concat(color, "-color");
@@ -650,6 +700,31 @@ var getColorClass = function getColorClass(color) {
   });
   return colorClasses;
 };
+function debounce(fn) {
+  var time = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 166;
+  var timeout;
+
+  function debounced() {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    var that = this;
+
+    var later = function later() {
+      fn.apply(that, args);
+    };
+
+    clearTimeout(timeout);
+    timeout = setTimeout(later, time);
+  }
+
+  debounced.clear = function () {
+    clearTimeout(timeout);
+  };
+
+  return debounced;
+}
 
 var Breadcrumb = function Breadcrumb(props) {
   var className = props.className,
@@ -1515,6 +1590,27 @@ CardTitle.propTypes = {
 CardTitle.defaultProps = {
   tag: 'h4',
   sub: false
+};
+
+var CardVideo = function CardVideo(props) {
+  var children = props.children,
+      className = props.className,
+      src = props.src,
+      attributes = _objectWithoutProperties(props, ["children", "className", "src"]);
+
+  var classes = classNames(className);
+  return React.createElement(MDBIframe, _extends({
+    "data-test": "card-video"
+  }, attributes, {
+    src: src,
+    className: classes
+  }), children);
+};
+
+CardVideo.propTypes = {
+  className: propTypes.string,
+  src: propTypes.string.isRequired,
+  children: propTypes.node
 };
 
 var Control = function Control(props) {
@@ -3320,9 +3416,8 @@ function (_Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "filterRows", function () {
-      var _this$state2 = _this.state,
-          unsearchable = _this$state2.unsearchable,
-          search = _this$state2.search;
+      var search = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _this.state.search;
+      var unsearchable = _this.state.unsearchable;
       var _this$props = _this.props,
           sortRows = _this$props.sortRows,
           noRecordsFoundLabel = _this$props.noRecordsFoundLabel;
@@ -3441,10 +3536,12 @@ function (_Component) {
       columns: props.data.columns || [],
       entries: props.entries,
       filteredRows: props.data.rows || [],
+      filterOptions: [],
       order: props.order || [],
       pages: [],
       rows: props.data.rows || [],
       search: "",
+      searchSelect: "",
       sorted: false,
       translateScrollHead: 0,
       unsearchable: []
@@ -3463,9 +3560,9 @@ function (_Component) {
     key: "componentDidMount",
     value: function componentDidMount() {
       var data = this.props.data;
-      var _this$state3 = this.state,
-          order = _this$state3.order,
-          columns = _this$state3.columns;
+      var _this$state2 = this.state,
+          order = _this$state2.order,
+          columns = _this$state2.columns;
 
       if (typeof data === "string") {
         this.fetchData(data, this.paginateRows);
@@ -3503,6 +3600,7 @@ function (_Component) {
           entriesOptions = _this$props3.entriesOptions,
           entriesLabel = _this$props3.entriesLabel,
           exportToCSV = _this$props3.exportToCSV,
+          filter = _this$props3.filter,
           fixed = _this$props3.fixed,
           hover = _this$props3.hover,
           info = _this$props3.info,
@@ -3534,16 +3632,17 @@ function (_Component) {
           onSearch = _this$props3.onSearch,
           onSort = _this$props3.onSort,
           onPageChange = _this$props3.onPageChange,
-          attributes = _objectWithoutProperties(_this$props3, ["autoWidth", "bordered", "borderless", "barReverse", "btn", "className", "children", "dark", "data", "disableRetreatAfterSorting", "displayEntries", "entriesOptions", "entriesLabel", "exportToCSV", "fixed", "hover", "info", "infoLabel", "maxHeight", "noBottomColumns", "noRecordsFoundLabel", "order", "pagesAmount", "paging", "paginationLabel", "responsive", "responsiveSm", "responsiveMd", "responsiveLg", "responsiveXl", "searching", "searchLabel", "scrollX", "scrollY", "small", "sortable", "striped", "tbodyColor", "tbodyTextWhite", "theadColor", "theadTextWhite", "sortRows", "onSearch", "onSort", "onPageChange"]);
+          attributes = _objectWithoutProperties(_this$props3, ["autoWidth", "bordered", "borderless", "barReverse", "btn", "className", "children", "dark", "data", "disableRetreatAfterSorting", "displayEntries", "entriesOptions", "entriesLabel", "exportToCSV", "filter", "fixed", "hover", "info", "infoLabel", "maxHeight", "noBottomColumns", "noRecordsFoundLabel", "order", "pagesAmount", "paging", "paginationLabel", "responsive", "responsiveSm", "responsiveMd", "responsiveLg", "responsiveXl", "searching", "searchLabel", "scrollX", "scrollY", "small", "sortable", "striped", "tbodyColor", "tbodyTextWhite", "theadColor", "theadTextWhite", "sortRows", "onSearch", "onSort", "onPageChange"]);
 
-      var _this$state4 = this.state,
-          columns = _this$state4.columns,
-          entries = _this$state4.entries,
-          filteredRows = _this$state4.filteredRows,
-          pages = _this$state4.pages,
-          activePage = _this$state4.activePage,
-          search = _this$state4.search,
-          translateScrollHead = _this$state4.translateScrollHead;
+      var _this$state3 = this.state,
+          columns = _this$state3.columns,
+          entries = _this$state3.entries,
+          filteredRows = _this$state3.filteredRows,
+          filterOptions = _this$state3.filterOptions,
+          pages = _this$state3.pages,
+          activePage = _this$state3.activePage,
+          search = _this$state3.search,
+          translateScrollHead = _this$state3.translateScrollHead;
       var tableClasses = classNames("dataTables_wrapper dt-bootstrap4", className);
       return React.createElement("div", {
         "data-test": "datatable",
@@ -3662,6 +3761,7 @@ DataTable.propTypes = {
   entriesLabel: propTypes.oneOfType([propTypes.string, propTypes.number, propTypes.object]),
   entriesOptions: propTypes.arrayOf(propTypes.number),
   exportToCSV: propTypes.bool,
+  filter: propTypes.string,
   fixed: propTypes.bool,
   hover: propTypes.bool,
   info: propTypes.bool,
@@ -4437,8 +4537,156 @@ FreeBird.defaultProps = {
   tag: "div"
 };
 
-var css$6 = ".hamburger-button__checkbox {\n  display: none;\n}\n\n.hamburger-button__button {\n  background-color: transparent;\n  height: 100%;\n  width: 100%;\n  text-align: center;\n  cursor: pointer;\n  top: -5px;\n}\n\nlabel.hamburger-button__button {\n  margin-bottom: 0;\n}\n\n#nav-icon1 {\n  width: 1.5em;\n  height: 1.5em;\n  position: relative;\n  -webkit-transform: rotate(0deg);\n  -moz-transform: rotate(0deg);\n  -o-transform: rotate(0deg);\n  transform: rotate(0deg);\n  -webkit-transition: .5s ease-in-out;\n  -moz-transition: .5s ease-in-out;\n  -o-transition: .5s ease-in-out;\n  transition: .5s ease-in-out;\n  cursor: pointer;\n}\n\n#nav-icon1 span {\n  display: block;\n  position: absolute;\n  height: 3px;\n  width: 100%;\n  border-radius: 1px;\n  background-color: #fff;\n  opacity: 1;\n  left: 0;\n  -webkit-transform: rotate(0deg);\n  -moz-transform: rotate(0deg);\n  -o-transform: rotate(0deg);\n  transform: rotate(0deg);\n  -webkit-transition: .25s ease-in-out;\n  -moz-transition: .25s ease-in-out;\n  -o-transition: .25s ease-in-out;\n  transition: .25s ease-in-out;\n}\n\n#nav-icon1 span:nth-child(1) {\n  top: 5px;\n}\n\n#nav-icon1 span:nth-child(2) {\n  top: 16px;\n}\n\n#nav-icon1 span:nth-child(3) {\n  top: 27px;\n}\n\n.hamburger-button__checkbox:checked+#nav-icon1 span:nth-child(1) {\n  top: 16px;\n  -webkit-transform: rotate(135deg);\n  -moz-transform: rotate(135deg);\n  -o-transform: rotate(135deg);\n  transform: rotate(135deg);\n}\n\n.hamburger-button__checkbox:checked+#nav-icon1 span:nth-child(2) {\n  opacity: 0;\n  left: -60px;\n}\n\n.hamburger-button__checkbox:checked+#nav-icon1 span:nth-child(3) {\n  top: 16px;\n  -webkit-transform: rotate(-135deg);\n  -moz-transform: rotate(-135deg);\n  -o-transform: rotate(-135deg);\n  transform: rotate(-135deg);\n}\n";
+var css$6 = ".mdb-gallery {\n  display: flex;\n  flex-wrap: wrap;\n  overflow-y: auto;\n  list-style: none;\n  padding: 0;\n}\n";
 styleInject(css$6);
+
+var Gallery = React.forwardRef(function Gallery(props, ref) {
+  var _props$cellHeight = props.cellHeight,
+      cellHeight = _props$cellHeight === void 0 ? 180 : _props$cellHeight,
+      children = props.children,
+      className = props.className,
+      _props$cols = props.cols,
+      cols = _props$cols === void 0 ? 2 : _props$cols,
+      tag = props.tag,
+      _props$spacing = props.spacing,
+      spacing = _props$spacing === void 0 ? 4 : _props$spacing,
+      style = props.style,
+      attributes = _objectWithoutProperties(props, ["cellHeight", "children", "className", "cols", "tag", "spacing", "style"]);
+
+  var classes = classNames('mdb-gallery', className);
+  return React.createElement(MDBBox, _extends({
+    tag: tag
+  }, attributes, {
+    style: _objectSpread2({
+      margin: -spacing / 2
+    }, style),
+    className: classes,
+    ref: ref
+  }), React.Children.map(children, function (child) {
+    if (!React.isValidElement(child)) {
+      return null;
+    }
+
+    var childCols = child.props.cols || 1;
+    var childRows = child.props.rows || 1;
+    return React.cloneElement(child, {
+      style: Object.assign({
+        width: "".concat(100 / cols * childCols, "%"),
+        height: cellHeight === 'auto' ? 'auto' : cellHeight * childRows + spacing,
+        padding: spacing / 2
+      }, child.props.style)
+    });
+  }));
+});
+Gallery.propTypes = {
+  tag: propTypes.oneOfType([propTypes.func, propTypes.string]),
+  className: propTypes.string,
+  children: propTypes.node,
+  cellHeight: propTypes.number,
+  cols: propTypes.number,
+  spacing: propTypes.number,
+  style: propTypes.object
+};
+Gallery.defaultProps = {
+  tag: 'ul'
+};
+
+var css$7 = ".mdb-gallery-element {\n  box-sizing: border-box;\n  flex-shrink: 0;\n}\n\n.mdb-gallery-title {\n  height: 100%;\n  display: block;\n  overflow: hidden;\n  position: relative;\n}\n\n.img-full-height {\n  height: 100%;\n  transform: translateX(-50%);\n  position: relative;\n  left: 50%;\n}\n\n.img-full-width {\n  width: 100%;\n  transform: translateY(-50%);\n  position: relative;\n  top: 50%;\n}\n";
+styleInject(css$7);
+
+var imgClass = function imgClass(img) {
+  if (!img || !img.complete) {
+    return;
+  }
+
+  if (img.width / img.height > img.parentElement.offsetWidth / img.parentElement.offsetHeight) {
+    img.classList.remove('img-full-width');
+    img.classList.add('img-full-height');
+  } else {
+    img.classList.remove('img-full-height');
+    img.classList.add('img-full-width');
+  }
+};
+
+function ensureImageCover(img) {
+  if (!img) {
+    return;
+  }
+
+  if (img.complete) {
+    imgClass(img);
+  } else {
+    img.addEventListener('load', function () {
+      imgClass(img);
+    });
+  }
+}
+
+var GalleryList = React.forwardRef(function GalleryList(props, ref) {
+  var children = props.children,
+      className = props.className,
+      cols = props.cols,
+      tag = props.tag,
+      rows = props.rows,
+      titleClasses = props.titleClasses,
+      elementClasses = props.elementClasses,
+      styles = props.styles,
+      attributes = _objectWithoutProperties(props, ["children", "className", "cols", "tag", "rows", "titleClasses", "elementClasses", "styles"]);
+
+  var imgRef = useRef(null);
+  var ec = classNames('mdb-gallery-element', elementClasses);
+  var tc = classNames('mdb-gallery-title', titleClasses);
+  useEffect(function () {
+    ensureImageCover(imgRef.current);
+  });
+  useEffect(function () {
+    var handleResize = debounce(function () {
+      imgClass(imgRef.current);
+    });
+    window.addEventListener('resize', handleResize);
+    return function () {
+      handleResize.clear();
+      window.removeEventListener('resive', handleResize);
+    };
+  }, []);
+  return React.createElement(MDBBox, _extends({
+    tag: tag,
+    ref: ref
+  }, attributes, {
+    className: ec
+  }), React.createElement(MDBBox, {
+    style: _objectSpread2({}, styles),
+    className: tc
+  }, React.Children.map(children, function (child) {
+    if (!React.isValidElement) {
+      return null;
+    }
+
+    if (child.type === 'img') {
+      return React.cloneElement(child, {
+        ref: imgRef
+      });
+    }
+
+    return child;
+  })));
+});
+GalleryList.propTypes = {
+  tag: propTypes.oneOfType([propTypes.func, propTypes.string]),
+  className: propTypes.string,
+  children: propTypes.node,
+  cols: propTypes.number,
+  rows: propTypes.number,
+  style: propTypes.object,
+  titleClasses: propTypes.string,
+  elementClasses: propTypes.string
+};
+GalleryList.defaultProps = {
+  tag: 'li'
+};
+
+var css$8 = ".hamburger-button__checkbox {\n  display: none;\n}\n\n.hamburger-button__button {\n  background-color: transparent;\n  height: 100%;\n  width: 100%;\n  text-align: center;\n  cursor: pointer;\n  top: -5px;\n}\n\nlabel.hamburger-button__button {\n  margin-bottom: 0;\n}\n\n#nav-icon1 {\n  width: 1.5em;\n  height: 1.5em;\n  position: relative;\n  -webkit-transform: rotate(0deg);\n  -moz-transform: rotate(0deg);\n  -o-transform: rotate(0deg);\n  transform: rotate(0deg);\n  -webkit-transition: .5s ease-in-out;\n  -moz-transition: .5s ease-in-out;\n  -o-transition: .5s ease-in-out;\n  transition: .5s ease-in-out;\n  cursor: pointer;\n}\n\n#nav-icon1 span {\n  display: block;\n  position: absolute;\n  height: 3px;\n  width: 100%;\n  border-radius: 1px;\n  background-color: #fff;\n  opacity: 1;\n  left: 0;\n  -webkit-transform: rotate(0deg);\n  -moz-transform: rotate(0deg);\n  -o-transform: rotate(0deg);\n  transform: rotate(0deg);\n  -webkit-transition: .25s ease-in-out;\n  -moz-transition: .25s ease-in-out;\n  -o-transition: .25s ease-in-out;\n  transition: .25s ease-in-out;\n}\n\n#nav-icon1 span:nth-child(1) {\n  top: 5px;\n}\n\n#nav-icon1 span:nth-child(2) {\n  top: 16px;\n}\n\n#nav-icon1 span:nth-child(3) {\n  top: 27px;\n}\n\n.hamburger-button__checkbox:checked+#nav-icon1 span:nth-child(1) {\n  top: 16px;\n  -webkit-transform: rotate(135deg);\n  -moz-transform: rotate(135deg);\n  -o-transform: rotate(135deg);\n  transform: rotate(135deg);\n}\n\n.hamburger-button__checkbox:checked+#nav-icon1 span:nth-child(2) {\n  opacity: 0;\n  left: -60px;\n}\n\n.hamburger-button__checkbox:checked+#nav-icon1 span:nth-child(3) {\n  top: 16px;\n  -webkit-transform: rotate(-135deg);\n  -moz-transform: rotate(-135deg);\n  -o-transform: rotate(-135deg);\n  transform: rotate(-135deg);\n}\n";
+styleInject(css$8);
 
 var HamburgerToggler = function HamburgerToggler(props) {
   var id = props.id,
@@ -5952,8 +6200,8 @@ Notification.defaultProps = {
   closeClassName: 'text-dark'
 };
 
-var css$7 = ".popover {\n  width: auto;\n  background-color: white;\n  color: #97999b;\n  text-align: center;\n  display: inline-block;\n  border-radius: 3px;\n  position: absolute;\n  font-size: 0.83em;\n  font-weight: normal;\n  border: 1px rgb(0, 0, 0) solid;\n  /* z-index: 200000; */\n  z-index: 10;\n  /* max-width: initial; */\n  max-width: 274px;\n  text-align: start;\n  background-color: #fff;\n  border: 1px solid rgba(0, 0, 0, 0.2);\n  border-radius: 0.3rem;\n  opacity: 0;\n  transition: opacity 0.3s, visibility 0.3s;\n  visibility: hidden;\n}\n\n.show.popover {\n  opacity: 1;\n  visibility: visible;\n}\n\n.popover-body {\n  color: #6c6e71;\n}\n\n.popover .popover_arrow {\n  width: 0;\n  height: 0;\n  border-style: solid;\n  position: absolute;\n  margin: 6px;\n  color: transparent;\n}\n\n.popover[x-placement^='top'] {\n  margin-bottom: 15px;\n}\n\n.popover[x-placement^='top'] .popover_arrow {\n  border-width: 8px 8px 0 8px;\n  border-color: #d6d6d6 transparent transparent transparent;\n  bottom: -8px;\n  margin-bottom: 0;\n}\n\n.popover[x-placement^='top'] .popover_arrow::before {\n  content: '';\n  display: inline-block;\n  position: absolute;\n  left: -8px;\n  bottom: 1.5px;\n  border: solid;\n  border-width: 8px 8px 0 8px;\n  border-color: white transparent transparent transparent;\n}\n\n.popover[x-placement^='bottom'] {\n  margin-top: 15px;\n}\n\n.popover[x-placement^='bottom'] .popover_arrow {\n  border-width: 0 8px 8px 8px;\n  border-color: transparent transparent #d6d6d6 transparent;\n  top: -8px;\n  margin-top: 0;\n}\n\n.popover[x-placement^='bottom'] .popover_arrow::before {\n  content: '';\n  display: inline-block;\n  position: absolute;\n  left: -8px;\n  top: 1.45px;\n  border: solid;\n  border-width: 0 8px 8px 8px;\n  border-color: transparent transparent white transparent;\n}\n\n.popover[x-placement^='right'] {\n  margin-left: 15px;\n}\n\n.popover[x-placement^='right'] .popover_arrow {\n  border-width: 8px 8px 8px 0;\n  border-color: transparent #d6d6d6 transparent transparent;\n  left: -8px;\n  margin-left: 0;\n}\n\n.popover[x-placement^='right'] .popover_arrow::before {\n  content: '';\n  display: inline-block;\n  position: absolute;\n  top: -8px;\n  left: 1.45px;\n  border: solid;\n  border-width: 8px 8px 8px 0;\n  border-color: transparent white transparent transparent;\n}\n\n.popover[x-placement^='left'] {\n  margin-right: 15px;\n}\n\n.popover[x-placement^='left'] .popover_arrow {\n  border-width: 8px 0 8px 8px;\n  border-color: transparent transparent transparent #d6d6d6;\n  right: -8px;\n  margin-right: 0;\n}\n\n.popover[x-placement^='left'] .popover_arrow::before {\n  content: '';\n  display: inline-block;\n  position: absolute;\n  top: -8px;\n  right: 1.45px;\n  border: solid;\n  border-width: 8px 0 8px 8px;\n  border-color: transparent transparent transparent white;\n}\n\n\n.tooltip {\n  width: auto;\n  background-color: black;\n  color: white;\n  text-align: center;\n  display: inline-block;\n  border-radius: 3px;\n  position: absolute;\n  /* font-size: 0.83em; */\n  font-weight: normal;\n  border: 1px rgb(0, 0, 0) solid;\n  /* z-index: 200000; */\n  z-index: 15;\n  /* max-width: initial; */\n  max-width: 274px;\n  text-align: start;\n  border: 1px solid rgba(0, 0, 0, 0.2);\n  border-radius: 0.3rem;\n  opacity: 0;\n  transition: opacity 0.3s, visibility 0.3s;\n  visibility: hidden;\n}\n\n.show.tooltip {\n  opacity: 1;\n  visibility: visible;\n}\n\n\n.tooltip .popover_arrow {\n  width: 0;\n  height: 0;\n  border-style: solid;\n  position: absolute;\n  margin: 6px;\n  color: transparent;\n}\n\n.tooltip[x-placement^='top'] {\n  margin-bottom: 5px;\n}\n\n.tooltip[x-placement^='top'] .popover_arrow {\n  border-width: 6px 6px 0 6px;\n  border-color: #131313 transparent transparent transparent;\n  bottom: -6px;\n  margin-bottom: 0;\n}\n\n.tooltip[x-placement^='top'] .popover_arrow::before {\n  content: '';\n  display: inline-block;\n  position: absolute;\n  left: -6px;\n  bottom: 1.5px;\n  border: solid;\n  border-width: 6px 6px 0 6px;\n  border-color: black transparent transparent transparent;\n}\n\n.tooltip[x-placement^='bottom'] {\n  margin-top: 5px;\n}\n\n.tooltip[x-placement^='bottom'] .popover_arrow {\n  border-width: 0 6px 6px 6px;\n  border-color: transparent transparent #131313 transparent;\n  top: -6px;\n  margin-top: 0;\n}\n\n.tooltip[x-placement^='bottom'] .popover_arrow::before {\n  content: '';\n  display: inline-block;\n  position: absolute;\n  left: -6px;\n  top: 1.45px;\n  border: solid;\n  border-width: 0 6px 6px 6px;\n  border-color: transparent transparent black transparent;\n}\n\n.tooltip[x-placement^='right'] {\n  margin-left: 5px;\n}\n\n.tooltip[x-placement^='right'] .popover_arrow {\n  border-width: 6px 6px 6px 0;\n  border-color: transparent #131313 transparent transparent;\n  left: -6px;\n  margin-left: 0;\n}\n\n.tooltip[x-placement^='right'] .popover_arrow::before {\n  content: '';\n  display: inline-block;\n  position: absolute;\n  top: -6px;\n  left: 1.45px;\n  border: solid;\n  border-width: 6px 6px 6px 0;\n  border-color: transparent black transparent transparent;\n}\n\n.tooltip[x-placement^='left'] {\n  margin-right: 5px;\n}\n\n.tooltip[x-placement^='left'] .popover_arrow {\n  border-width: 6px 0 6px 6px;\n  border-color: transparent transparent transparent #131313;\n  right: -6px;\n  margin-right: 0;\n}\n\n.tooltip[x-placement^='left'] .popover_arrow::before {\n  content: '';\n  display: inline-block;\n  position: absolute;\n  top: -6px;\n  right: 1.45px;\n  border: solid;\n  border-width: 6px 0 6px 6px;\n  border-color: transparent transparent transparent black;\n}\n\n";
-styleInject(css$7);
+var css$9 = ".popover {\n  width: auto;\n  background-color: white;\n  color: #97999b;\n  text-align: center;\n  display: inline-block;\n  border-radius: 3px;\n  position: absolute;\n  font-size: 0.83em;\n  font-weight: normal;\n  border: 1px rgb(0, 0, 0) solid;\n  /* z-index: 200000; */\n  z-index: 10;\n  /* max-width: initial; */\n  max-width: 274px;\n  text-align: start;\n  background-color: #fff;\n  border: 1px solid rgba(0, 0, 0, 0.2);\n  border-radius: 0.3rem;\n  opacity: 0;\n  transition: opacity 0.3s, visibility 0.3s;\n  visibility: hidden;\n}\n\n.show.popover {\n  opacity: 1;\n  visibility: visible;\n}\n\n.popover-body {\n  color: #6c6e71;\n}\n\n.popover .popover_arrow {\n  width: 0;\n  height: 0;\n  border-style: solid;\n  position: absolute;\n  margin: 6px;\n  color: transparent;\n}\n\n.popover[x-placement^=\"top\"] {\n  margin-bottom: 15px;\n}\n\n.popover[x-placement^=\"top\"] .popover_arrow {\n  border-width: 8px 8px 0 8px;\n  border-color: #d6d6d6 transparent transparent transparent;\n  bottom: -8px;\n  margin-bottom: 0;\n}\n\n.popover[x-placement^=\"top\"] .popover_arrow::before {\n  content: \"\";\n  display: inline-block;\n  position: absolute;\n  left: -8px;\n  bottom: 1.5px;\n  border: solid;\n  border-width: 8px 8px 0 8px;\n  border-color: white transparent transparent transparent;\n}\n\n.popover[x-placement^=\"bottom\"] {\n  margin-top: 15px;\n}\n\n.popover[x-placement^=\"bottom\"] .popover_arrow {\n  border-width: 0 8px 8px 8px;\n  border-color: transparent transparent #d6d6d6 transparent;\n  top: -8px;\n  margin-top: 0;\n}\n\n.popover[x-placement^=\"bottom\"] .popover_arrow::before {\n  content: \"\";\n  display: inline-block;\n  position: absolute;\n  left: -8px;\n  top: 1.45px;\n  border: solid;\n  border-width: 0 8px 8px 8px;\n  border-color: transparent transparent white transparent;\n}\n\n.popover[x-placement^=\"right\"] {\n  margin-left: 15px;\n}\n\n.popover[x-placement^=\"right\"] .popover_arrow {\n  border-width: 8px 8px 8px 0;\n  border-color: transparent #d6d6d6 transparent transparent;\n  left: -8px;\n  margin-left: 0;\n}\n\n.popover[x-placement^=\"right\"] .popover_arrow::before {\n  content: \"\";\n  display: inline-block;\n  position: absolute;\n  top: -8px;\n  left: 1.45px;\n  border: solid;\n  border-width: 8px 8px 8px 0;\n  border-color: transparent white transparent transparent;\n}\n\n.popover[x-placement^=\"left\"] {\n  margin-right: 15px;\n}\n\n.popover[x-placement^=\"left\"] .popover_arrow {\n  border-width: 8px 0 8px 8px;\n  border-color: transparent transparent transparent #d6d6d6;\n  right: -8px;\n  margin-right: 0;\n}\n\n.popover[x-placement^=\"left\"] .popover_arrow::before {\n  content: \"\";\n  display: inline-block;\n  position: absolute;\n  top: -8px;\n  right: 1.45px;\n  border: solid;\n  border-width: 8px 0 8px 8px;\n  border-color: transparent transparent transparent white;\n}\n\n.tooltip {\n  width: auto;\n  background-color: black;\n  color: white;\n  text-align: center;\n  display: inline-block;\n  border-radius: 3px;\n  position: absolute;\n  /* font-size: 0.83em; */\n  font-weight: normal;\n  border: 1px rgb(0, 0, 0) solid;\n  /* z-index: 200000; */\n  z-index: 15;\n  /* max-width: initial; */\n  max-width: 274px;\n  text-align: start;\n  border: 1px solid rgba(0, 0, 0, 0.2);\n  border-radius: 0.3rem;\n  opacity: 0;\n  transition: opacity 0.3s, visibility 0.3s;\n  visibility: hidden;\n}\n\n.show {\n  z-index: 15;\n}\n.tooltip-inner {\n  display: block;\n}\n\n.show.tooltip {\n  opacity: 1;\n  visibility: visible;\n}\n\n.tooltip .popover_arrow {\n  width: 0;\n  height: 0;\n  border-style: solid;\n  position: absolute;\n  margin: 6px;\n  color: transparent;\n}\n\n.tooltip[x-placement^=\"top\"],\n.show[x-placement^=\"top\"]:not(.tooltip) {\n  margin-bottom: 5px;\n}\n\n.tooltip[x-placement^=\"top\"] .popover_arrow {\n  border-width: 6px 6px 0 6px;\n  border-color: #131313 transparent transparent transparent;\n  bottom: -6px;\n  margin-bottom: 0;\n}\n\n.tooltip[x-placement^=\"top\"] .popover_arrow::before {\n  content: \"\";\n  display: inline-block;\n  position: absolute;\n  left: -6px;\n  bottom: 1.5px;\n  border: solid;\n  border-width: 6px 6px 0 6px;\n  border-color: black transparent transparent transparent;\n}\n\n.tooltip[x-placement^=\"bottom\"],\n.show[x-placement^=\"bottom\"]:not(.tooltip) {\n  margin-top: 5px;\n}\n\n.tooltip[x-placement^=\"bottom\"] .popover_arrow {\n  border-width: 0 6px 6px 6px;\n  border-color: transparent transparent #131313 transparent;\n  top: -6px;\n  margin-top: 0;\n}\n\n.tooltip[x-placement^=\"bottom\"] .popover_arrow::before {\n  content: \"\";\n  display: inline-block;\n  position: absolute;\n  left: -6px;\n  top: 1.45px;\n  border: solid;\n  border-width: 0 6px 6px 6px;\n  border-color: transparent transparent black transparent;\n}\n\n.tooltip[x-placement^=\"right\"],\n.show[x-placement^=\"right\"]:not(.tooltip) {\n  margin-left: 5px;\n}\n\n.tooltip[x-placement^=\"right\"] .popover_arrow {\n  border-width: 6px 6px 6px 0;\n  border-color: transparent #131313 transparent transparent;\n  left: -6px;\n  margin-left: 0;\n}\n\n.tooltip[x-placement^=\"right\"] .popover_arrow::before {\n  content: \"\";\n  display: inline-block;\n  position: absolute;\n  top: -6px;\n  left: 1.45px;\n  border: solid;\n  border-width: 6px 6px 6px 0;\n  border-color: transparent black transparent transparent;\n}\n\n.tooltip[x-placement^=\"left\"],\n.show[x-placement^=\"left\"]:not(.tooltip) {\n  margin-right: 5px;\n}\n\n.tooltip[x-placement^=\"left\"] .popover_arrow {\n  border-width: 6px 0 6px 6px;\n  border-color: transparent transparent transparent #131313;\n  right: -6px;\n  margin-right: 0;\n}\n\n.tooltip[x-placement^=\"left\"] .popover_arrow::before {\n  content: \"\";\n  display: inline-block;\n  position: absolute;\n  top: -6px;\n  right: 1.45px;\n  border: solid;\n  border-width: 6px 0 6px 6px;\n  border-color: transparent transparent transparent black;\n}\n";
+styleInject(css$9);
 
 var Popover =
 /*#__PURE__*/
@@ -5993,7 +6241,7 @@ function (_React$Component) {
         showPopper: toggler && true
       }, function () {
         if (_this.state.showPopper) _this.setState({
-          visible: typeof toggler !== 'undefined' ? toggler : !_this.state.visible
+          visible: typeof toggler !== "undefined" ? toggler : !_this.state.visible
         }, function () {
           _this.createPopper();
 
@@ -6044,7 +6292,7 @@ function (_React$Component) {
       this.timer = setInterval(function () {
         return _this2.setPopperJS();
       }, 3);
-      document.addEventListener('click', this.handleClick);
+      document.addEventListener("click", this.handleClick);
     }
   }, {
     key: "render",
@@ -6056,21 +6304,26 @@ function (_React$Component) {
           className = _this$props2.className,
           clickable = _this$props2.clickable,
           domElement = _this$props2.domElement,
-          modifiers = _this$props2.modifiers,
+          email = _this$props2.email,
           id = _this$props2.id,
           isVisible = _this$props2.isVisible,
-          onChange = _this$props2.onChange,
+          material = _this$props2.material,
+          modifiers = _this$props2.modifiers,
           placement = _this$props2.placement,
           popover = _this$props2.popover,
+          sm = _this$props2.sm,
           style = _this$props2.style,
+          onChange = _this$props2.onChange,
           Tag = _this$props2.tag,
-          attributes = _objectWithoutProperties(_this$props2, ["children", "className", "clickable", "domElement", "modifiers", "id", "isVisible", "onChange", "placement", "popover", "style", "tag"]);
+          attributes = _objectWithoutProperties(_this$props2, ["children", "className", "clickable", "domElement", "email", "id", "isVisible", "material", "modifiers", "placement", "popover", "sm", "style", "onChange", "tag"]);
 
       var _this$state = this.state,
           visible = _this$state.visible,
           showPopper = _this$state.showPopper;
-      var popper = children[1];
+      var Popper = children[1];
       var Wrapper = children[0];
+      var classes = classNames(visible && "show", popover ? "popover" : !material && !email && "tooltip px-2", className);
+      var popperClasses = classNames((material || email) && "tooltip-inner", material && (sm ? "md-inner" : "md-inner-main"), email && (sm ? "md-inner" : "md-inner-email"));
       return React.createElement(React.Fragment, null, !domElement ? React.createElement(Wrapper.type, _extends({}, Wrapper.props, {
         onMouseEnter: function onMouseEnter() {
           return !clickable && _this3.doToggle(true);
@@ -6132,11 +6385,13 @@ function (_React$Component) {
         ref: function ref(_ref2) {
           return _this3.popoverWrapperRef = _ref2;
         },
-        className: classNames(visible && 'show', popover ? 'popover' : 'tooltip px-2', className),
+        className: classes,
         "data-popper": id
-      }, attributes), popper, React.createElement("span", {
+      }, attributes), React.createElement(Popper.type, {
+        className: classNames(popperClasses, Popper.props.className)
+      }, Popper.props.children), React.createElement("span", {
         "x-arrow": "",
-        className: "popover_arrow"
+        className: classNames("popover_arrow")
       })));
     }
   }]);
@@ -6148,25 +6403,28 @@ Popover.propTypes = {
   children: propTypes.node,
   clickable: propTypes.bool,
   domElement: propTypes.bool,
-  modifiers: propTypes.object,
+  email: propTypes.bool,
   id: propTypes.string,
   isVisible: propTypes.bool,
+  material: propTypes.bool,
+  modifiers: propTypes.object,
   placement: propTypes.string,
   popover: propTypes.bool,
+  sm: propTypes.bool,
   style: propTypes.objectOf(propTypes.string),
   tag: propTypes.string
 };
 Popover.defaultProps = {
   clickable: false,
   domElement: false,
-  id: 'popper',
+  id: "popper",
   isVisible: false,
-  placement: 'top',
+  placement: "top",
   popover: false,
   style: {
-    display: 'inline-block'
+    display: "inline-block"
   },
-  tag: 'div'
+  tag: "div"
 };
 
 var PopoverBody = function PopoverBody(_ref) {
@@ -6993,4 +7251,100 @@ TreeviewList.contextTypes = {
   theme: propTypes.string
 };
 
-export { Alert, Animation, Badge, Breadcrumb, BreadcrumbItem, Button, ButtonGroup, ButtonToolbar, Card, CardBody, CardFooter, CardGroup, CardHeader, CardImage, CardText, CardTitle, Carousel, CarouselCaption, Control as CarouselControl, CarouselIndicator, CarouselIndicators, CarouselInner, CarouselItem, MDBCloseIcon as CloseIcon, Col, Collapse, Container, DataTable, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, EdgeHeader, Fa, Footer, FormInline, FreeBird, HamburgerToggler, Iframe, Input, InputGroup, InputNumeric, Jumbotron, ListGroup, ListGroupItem, Alert as MDBAlert, Animation as MDBAnimation, Badge as MDBBadge, Breadcrumb as MDBBreadcrumb, BreadcrumbItem as MDBBreadcrumbItem, Button as MDBBtn, ButtonGroup as MDBBtnGroup, ButtonToolbar as MDBBtnToolbar, Card as MDBCard, CardBody as MDBCardBody, CardFooter as MDBCardFooter, CardGroup as MDBCardGroup, CardHeader as MDBCardHeader, CardImage as MDBCardImage, CardText as MDBCardText, CardTitle as MDBCardTitle, Carousel as MDBCarousel, CarouselCaption as MDBCarouselCaption, CarouselIndicator as MDBCarouselIndicator, CarouselIndicators as MDBCarouselIndicators, CarouselInner as MDBCarouselInner, CarouselItem as MDBCarouselItem, MDBCloseIcon, Col as MDBCol, Collapse as MDBCollapse, Container as MDBContainer, Control as MDBControl, DataTable as MDBDataTable, Dropdown as MDBDropdown, DropdownItem as MDBDropdownItem, DropdownMenu as MDBDropdownMenu, DropdownToggle as MDBDropdownToggle, EdgeHeader as MDBEdgeHeader, Footer as MDBFooter, FormInline as MDBFormInline, FreeBird as MDBFreeBird, HamburgerToggler as MDBHamburgerToggler, Fa as MDBIcon, Iframe as MDBIframe, Input as MDBInput, InputGroup as MDBInputGroup, InputNumeric as MDBInputSelect, Jumbotron as MDBJumbotron, ListGroup as MDBListGroup, ListGroupItem as MDBListGroupItem, Mask as MDBMask, Media as MDBMedia, Modal as MDBModal, ModalBody as MDBModalBody, ModalFooter as MDBModalFooter, ModalHeader as MDBModalHeader, Nav as MDBNav, NavItem as MDBNavItem, NavLink as MDBNavLink, Navbar as MDBNavbar, NavbarBrand as MDBNavbarBrand, NavbarNav as MDBNavbarNav, NavbarToggler as MDBNavbarToggler, Notification as MDBNotification, PageItem as MDBPageItem, PageLink as MDBPageNav, Pagination as MDBPagination, Popover as MDBPopover, PopoverBody as MDBPopoverBody, PopoverHeader as MDBPopoverHeader, Popover as MDBPopper, Progress as MDBProgress, Rating as MDBRating, Row as MDBRow, TabContent as MDBTabContent, TabPane as MDBTabPane, Table as MDBTable, TableBody as MDBTableBody, TableFoot as MDBTableFoot, TableHead as MDBTableHead, Popover as MDBTooltip, Treeview as MDBTreeview, TreeviewItem as MDBTreeviewItem, TreeviewList as MDBTreeviewList, View as MDBView, Waves as MDBWaves, Mask, Media, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, Navbar, NavbarBrand, NavbarNav, NavbarToggler, Notification, PageItem, PageLink, Pagination, Popover, PopoverBody, PopoverHeader, Popover as Popper, Progress, Rating, Row, TabContent, TabPane, Table, TableBody, TableFoot, TableHead, Popover as Tooltip, Treeview, TreeviewItem, TreeviewList, View, Waves };
+var css$a = ".note-dark {\n  background-color: #000;\n  color: #fff;\n  border-color: #58595a;\n}\n\n.note-default {\n  background-color: rgb(164, 243, 235);\n  border-color: #00695c;\n}\n\n.note-elegant {\n  background-color: #2E2E2E;\n  border-color: #212121;\n  color: #fff;\n}\n\n.note-stylish {\n  background-color: #4B515D;\n  border-color: #3E4551;\n  color: #fff;\n}\n\n.note-unique {\n  background-color: #3F729B;\n  border-color: #1C2331;\n  color: #fff;\n}\n\n.note-special {\n  background-color: #37474F;\n  border-color: #263238;\n  color: #fff;\n}\n";
+styleInject(css$a);
+
+var Typogrphy =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(Typogrphy, _React$Component);
+
+  function Typogrphy() {
+    _classCallCheck(this, Typogrphy);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(Typogrphy).apply(this, arguments));
+  }
+
+  _createClass(Typogrphy, [{
+    key: "render",
+    value: function render() {
+      var _this$props = this.props,
+          className = _this$props.className,
+          Tag = _this$props.tag,
+          children = _this$props.children,
+          variant = _this$props.variant,
+          blockquote = _this$props.blockquote,
+          bqColor = _this$props.bqColor,
+          bqTitle = _this$props.bqTitle,
+          bqFooter = _this$props.bqFooter,
+          bqText = _this$props.bqText,
+          listUnStyled = _this$props.listUnStyled,
+          listInLine = _this$props.listInLine,
+          colorText = _this$props.colorText,
+          text = _this$props.text,
+          note = _this$props.note,
+          noteColor = _this$props.noteColor,
+          noteTitle = _this$props.noteTitle,
+          attributes = _objectWithoutProperties(_this$props, ["className", "tag", "children", "variant", "blockquote", "bqColor", "bqTitle", "bqFooter", "bqText", "listUnStyled", "listInLine", "colorText", "text", "note", "noteColor", "noteTitle"]);
+
+      var classes = classNames(variant && variant, colorText && "".concat(colorText.toLowerCase(), "-text"), text && "text-".concat(text), className);
+      var bc = classNames('blockquote', bqColor && "bq-".concat(bqColor), className);
+      var notes = classNames('note', noteColor && "note-".concat(noteColor), className);
+      var isEmptyClass = classes !== '' ? classes : null;
+
+      if (blockquote) {
+        return React.createElement(MDBBox, {
+          tag: "blockquote",
+          className: bc
+        }, children);
+      } else if (listUnStyled) {
+        return React.createElement(MDBBox, {
+          tag: "ul",
+          className: "list-unstyled"
+        }, children);
+      } else if (listInLine) {
+        return React.createElement(MDBBox, {
+          tag: "ul",
+          className: "list-inline"
+        }, children);
+      } else if (note) {
+        return React.createElement(MDBBox, {
+          tag: "p",
+          className: notes
+        }, React.createElement("strong", null, noteTitle), children);
+      } else {
+        return React.createElement(Tag, _extends({}, attributes, {
+          className: isEmptyClass
+        }), children);
+      }
+    }
+  }]);
+
+  return Typogrphy;
+}(React.Component);
+
+Typogrphy.propTypes = {
+  className: propTypes.string,
+  tag: propTypes.oneOfType([propTypes.func, propTypes.string]),
+  variant: propTypes.string,
+  blockquote: propTypes.bool,
+  bqColor: propTypes.string,
+  bqTitle: propTypes.string,
+  listUnStyled: propTypes.bool,
+  listInLine: propTypes.bool,
+  colorText: propTypes.string,
+  note: propTypes.bool,
+  noteColor: propTypes.string,
+  noteTitle: propTypes.string
+};
+Typogrphy.defaultProps = {
+  tag: 'p',
+  abbr: false,
+  abbrLeftText: true,
+  blockquote: false,
+  listUnStyled: false,
+  listInLine: false,
+  noteColor: 'primary'
+};
+
+export { Alert, Animation, Badge, Box, Breadcrumb, BreadcrumbItem, Button, ButtonGroup, ButtonToolbar, Card, CardBody, CardFooter, CardGroup, CardHeader, CardImage, CardText, CardTitle, CardVideo, Carousel, CarouselCaption, Control as CarouselControl, CarouselIndicator, CarouselIndicators, CarouselInner, CarouselItem, MDBCloseIcon as CloseIcon, Col, Collapse, Container, DataTable, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, EdgeHeader, Fa, Footer, FormInline, FreeBird, Gallery, GalleryList, HamburgerToggler, Iframe, Input, InputGroup, InputNumeric, Jumbotron, ListGroup, ListGroupItem, Alert as MDBAlert, Animation as MDBAnimation, Badge as MDBBadge, Box as MDBBox, Breadcrumb as MDBBreadcrumb, BreadcrumbItem as MDBBreadcrumbItem, Button as MDBBtn, ButtonGroup as MDBBtnGroup, ButtonToolbar as MDBBtnToolbar, Card as MDBCard, CardBody as MDBCardBody, CardFooter as MDBCardFooter, CardGroup as MDBCardGroup, CardHeader as MDBCardHeader, CardImage as MDBCardImage, CardText as MDBCardText, CardTitle as MDBCardTitle, CardVideo as MDBCardVideo, Carousel as MDBCarousel, CarouselCaption as MDBCarouselCaption, CarouselIndicator as MDBCarouselIndicator, CarouselIndicators as MDBCarouselIndicators, CarouselInner as MDBCarouselInner, CarouselItem as MDBCarouselItem, MDBCloseIcon, Col as MDBCol, Collapse as MDBCollapse, Container as MDBContainer, Control as MDBControl, DataTable as MDBDataTable, Dropdown as MDBDropdown, DropdownItem as MDBDropdownItem, DropdownMenu as MDBDropdownMenu, DropdownToggle as MDBDropdownToggle, EdgeHeader as MDBEdgeHeader, Footer as MDBFooter, FormInline as MDBFormInline, FreeBird as MDBFreeBird, Gallery as MDBGallery, GalleryList as MDBGalleryList, HamburgerToggler as MDBHamburgerToggler, Fa as MDBIcon, Iframe as MDBIframe, Input as MDBInput, InputGroup as MDBInputGroup, InputNumeric as MDBInputSelect, Jumbotron as MDBJumbotron, ListGroup as MDBListGroup, ListGroupItem as MDBListGroupItem, Mask as MDBMask, Media as MDBMedia, Modal as MDBModal, ModalBody as MDBModalBody, ModalFooter as MDBModalFooter, ModalHeader as MDBModalHeader, Nav as MDBNav, NavItem as MDBNavItem, NavLink as MDBNavLink, Navbar as MDBNavbar, NavbarBrand as MDBNavbarBrand, NavbarNav as MDBNavbarNav, NavbarToggler as MDBNavbarToggler, Notification as MDBNotification, PageItem as MDBPageItem, PageLink as MDBPageNav, Pagination as MDBPagination, Popover as MDBPopover, PopoverBody as MDBPopoverBody, PopoverHeader as MDBPopoverHeader, Popover as MDBPopper, Progress as MDBProgress, Rating as MDBRating, Row as MDBRow, TabContent as MDBTabContent, TabPane as MDBTabPane, Table as MDBTable, TableBody as MDBTableBody, TableFoot as MDBTableFoot, TableHead as MDBTableHead, Popover as MDBTooltip, Treeview as MDBTreeview, TreeviewItem as MDBTreeviewItem, TreeviewList as MDBTreeviewList, Typogrphy as MDBTypo, Typogrphy as MDBTypography, View as MDBView, Waves as MDBWaves, Mask, Media, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, Navbar, NavbarBrand, NavbarNav, NavbarToggler, Notification, PageItem, PageLink, Pagination, Popover, PopoverBody, PopoverHeader, Popover as Popper, Progress, Rating, Row, TabContent, TabPane, Table, TableBody, TableFoot, TableHead, Popover as Tooltip, Treeview, TreeviewItem, TreeviewList, Typogrphy as Typo, Typogrphy as Typography, View, Waves };
