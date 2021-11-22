@@ -1,6 +1,6 @@
 {
   "name": "mdbreact",
-  "version": "5.1.0",
+  "version": "5.2.0",
   "author": "MDBootstrap",
   "repository": "https://github.com/mdbootstrap/React-Bootstrap-with-Material-Design",
   "main": "dist/mdbreact.js",
@@ -34,7 +34,6 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@date-io/moment": "1.3.5",
     "@fortawesome/fontawesome-free": "^5.12.0",
     "@material-ui/core": "3.9.3",
     "bootstrap-css-only": "4.4.1",

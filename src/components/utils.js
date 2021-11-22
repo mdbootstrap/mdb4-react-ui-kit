@@ -282,8 +282,6 @@ const themeColorsOpacity = {
 export const takeThemeColor = theme => themeColors[theme];
 export const takeThemeColorOpacity = theme => themeColorsOpacity[theme];
 
-export const takeAcutalDate = date => moment(date || new Date());
-
 export const testData = {
   columns: [
     {
