@@ -1,4 +1,4 @@
-import moment from 'moment';
+
 // import variables from '../../dist/scss/core/_colors.scss';
 
 // const { danger, warning, success, primary, info, secondary, light, dark } = variables;
