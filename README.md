@@ -21,7 +21,7 @@ Regardless whether you want to create a Travel Blog or an e-commerce shop to sel
 
 <p>Created by <a href="https://mdbootstrap.com"><img height="30" src="https://mdbootstrap.com/img/Marketing/general/logo/medium/mdb-react-r.png"></a>  
 <a href="https://npmcharts.com/compare/mdbreact?minimal=true"> <img src="https://img.shields.io/npm/dm/mdbootstrap.svg?label=NPM%20Downloads" alt="Downloads"></a>
-<a href="https://github.com/mdbootstrap/mdb-react-ui-kit/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
+<a href="https://github.com/mdbootstrap/mdb4-react-ui-kit/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
 <a href="https://twitter.com/intent/tweet/?text=Thanks+@mdbootstrap+for+creating+amazing+and+free+Material+Design+for+Bootstrap+4+UI+KIT%20https://mdbootstrap.com/docs/react/&hashtags=javascript,code,webdesign,bootstrap"><img src="https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Let%20us%20know%20you%20were%20here%21&"></a>
 <a href="https://www.youtube.com/watch?v=c9B4TPnak1A"><img alt="YouTube Video Views" src="https://img.shields.io/youtube/views/c9B4TPnak1A?label=Bootstrap%205%20Tutorial%20Views&style=social"></a></p>
 
@@ -82,7 +82,7 @@ ___
   <tbody>
     <tr>
       <td align="center">
-         <a href="https://mdbootstrap.com/docs/b5/react/getting-started/" alt="Bootstrap Tutorials" rel="dofollow">
+         <a href="https://mdbootstrap.com/docs/standard/getting-started/" alt="Bootstrap Tutorials" rel="dofollow">
           		<img src="https://mdbootstrap.com/wp-content/uploads/2020/12/learnmore-1.png">
           </a>
       </td>
@@ -95,7 +95,7 @@ ___
      <tr>
         <td align="center">
           <p align="center"><b>Start learning from Basics</b></p>
-          <a href="https://mdbootstrap.com/docs/b5/react/getting-started/" alt="Bootstrap 5" rel="dofollow">
+          <a href="https://mdbootstrap.com/docs/standard/getting-started/" alt="Bootstrap 5" rel="dofollow">
           		<img src="https://mdbootstrap.com/wp-content/uploads/2020/12/Screenshot_26.png">
           </a>
          </td>
@@ -114,7 +114,7 @@ ___
 
 # Demo
 
-#### Simplicity and ease of use are key features of MDB 5 React UI Kit. You need only one minute to install and run it.
+#### Simplicity and ease of use are key features of MDB 4 React UI Kit. You need only one minute to install and run it.
 
 ### Buttons
 
@@ -190,7 +190,7 @@ ___
   </p>
 </a>
 
-<a href="https://mdbootstrap.com/docs/b5/react/content-styles/hover-effects/" alt="Bootstrap 5" rel="dofollow">
+<a href="https://mdbootstrap.com/docs/react/content-styles/hover-effects/" alt="Bootstrap 5" rel="dofollow">
   <p align="center">
     <img src="https://mdbootstrap.com/img/Marketing/campaigns/demo-hover2.png">
   </p>
