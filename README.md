@@ -4,6 +4,15 @@ MDB is a collection of free Bootstrap templates, themes, design tools & resource
 
 ---
 
+#### This content is for the previous 4th version of Bootstrap
+
+#### Newer version is available for Bootstrap 5. We recommend migrating to the latest version of our product
+
+#### [>> Get 700+ material UI components, free hosting, super simple 1 minute installation & much more](https://mdbootstrap.com/docs/b5/react/)
+
+---
+
+
 # Get started
 
 ### [>> Get Started in 1 minute](https://mdbootstrap.com/docs/react/getting-started/installation/)
