@@ -51,12 +51,12 @@ Trusted by <b>2 000 000+</b> developers & designers. Used by companies & institu
     <tr>
       <td>
           <a href="https://mdbootstrap.com/docs/react/" alt="Bootstrap 5" rel="dofollow">
-          		<img src="https://mdbootstrap.com/wp-content/themes/mdbootstrap4/content/en/_mdb5/react/about/assets/mdb5-react.jpg">
+          		<img src="https://mdbcdn.b-cdn.net/img/Marketing/products/react/mdb-free.webp">
           </a>
       </td>
       <td>
         <ul>
-        <li><b><a href="https://mdbootstrap.com/docs/b5/react/">700+ UI components</a></b></li>          
+        <li><b><a href="https://mdbootstrap.com/docs/react/">500+ UI components</a></b></li>          
          <li>Super simple, 1 minute installation</li>
          <li>Detailed docs & practical examples</li>
          <li>Lots of tutorials</li>
