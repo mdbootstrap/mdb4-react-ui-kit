@@ -193,13 +193,13 @@ ___
 
 <p>MDB hover effect appears when the user positions the computer cursor over an element without activating it. Hover effects make a website more interactive.</p>
 
-<a href="https://mdbootstrap.com/docs/react/content-styles/hover-effects/" alt="Bootstrap 5" rel="dofollow">
+<a href="https://mdbootstrap.com/docs/react/css/hover-effects/" alt="Bootstrap 5" rel="dofollow">
   <p align="center">
     <img src="https://mdbootstrap.com/img/Marketing/campaigns/demo-hover.gif">
   </p>
 </a>
 
-<a href="https://mdbootstrap.com/docs/react/content-styles/hover-effects/" alt="Bootstrap 5" rel="dofollow">
+<a href="https://mdbootstrap.com/docs/react/css/hover-effects/" alt="Bootstrap 5" rel="dofollow">
   <p align="center">
     <img src="https://mdbootstrap.com/img/Marketing/campaigns/demo-hover2.png">
   </p>
@@ -209,7 +209,7 @@ ___
 
 <p>Notes are small components very helpful in inserting an additional piece of information.</p>
 
-<a href="https://mdbootstrap.com/docs/react/content-styles/typography/" alt="Bootstrap 5" rel="dofollow">
+<a href="https://mdbootstrap.com/docs/react/content/typography/" alt="Bootstrap 5" rel="dofollow">
   <p align="center">
     <img src="https://mdbootstrap.com/img/Marketing/campaigns/demo-alerts.png">
   </p>
