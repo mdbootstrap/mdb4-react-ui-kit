@@ -76,7 +76,9 @@ class Modal extends Component {
   handleEscape = e => {
     if (this.props.keyboard && e.keyCode === 27) {
       e.preventDefault();
-      this.props.toggle();
+      if(!this.props.disableEscape) {
+        this.props.toggle();
+      }
     }
   };
 
@@ -273,6 +275,7 @@ Modal.propTypes = {
   contentClassName: PropTypes.string,
   disableBackdrop: PropTypes.bool,
   disableFocusTrap: PropTypes.bool,
+  disableEscape: PropTypes.bool,
   fade: PropTypes.bool,
   frame: PropTypes.bool,
   fullHeight: PropTypes.bool,
